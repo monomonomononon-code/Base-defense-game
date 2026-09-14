@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/endlesspanel.tsx","./src/musicsettings.tsx","./src/main.tsx","./src/game/audio.ts","./src/game/data.ts","./src/game/endless.ts","./src/game/engine.ts","./src/game/mobileinput.ts","./src/game/music.ts","./src/game/musicscore.ts","./src/game/render.ts","./src/game/state.ts"],"version":"5.8.3"}

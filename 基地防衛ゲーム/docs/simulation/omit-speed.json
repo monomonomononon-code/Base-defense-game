@@ -1,7 +1,7 @@
 {
   "sourceHashes": {
     "src/game/data.ts": "93dea799867143f34616c12bf6d33ac64c3b1426e1cdb1680270f49ad7861f07",
-    "src/game/state.ts": "4964babbf09861fef472a0f54de009963e3bd896f083a5fee0d4984632bc4089",
+    "src/game/state.ts": "c844a177246fbcee1e3b9923b3c902a006e55ed010fd518fb4df478dd7099d4c",
     "src/game/engine.ts": "1157f8d57a714f36a9da1cc5e6fcb6060ca935059c2474a90a52b096e34c42de",
     "scripts/simulate-campaign.ts": "f1676f034e037b4adb700260245ff46679679e6de4f87c99017b4982f70f5505"
   },
@@ -2892,7 +2892,9 @@
           "particles": true,
           "shake": true,
           "sfxVolume": 0.55,
-          "sfxMuted": false
+          "sfxMuted": false,
+          "bgmVolume": 0.4,
+          "bgmMuted": false
         },
         "completed": true
       }
@@ -5629,7 +5631,9 @@
           "particles": true,
           "shake": true,
           "sfxVolume": 0.55,
-          "sfxMuted": false
+          "sfxMuted": false,
+          "bgmVolume": 0.4,
+          "bgmMuted": false
         },
         "completed": true
       }
@@ -8539,7 +8543,9 @@
           "particles": true,
           "shake": true,
           "sfxVolume": 0.55,
-          "sfxMuted": false
+          "sfxMuted": false,
+          "bgmVolume": 0.4,
+          "bgmMuted": false
         },
         "completed": true
       }
