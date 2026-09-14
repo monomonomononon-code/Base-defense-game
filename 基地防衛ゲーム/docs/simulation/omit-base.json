@@ -1,0 +1,8555 @@
+{
+  "sourceHashes": {
+    "src/game/data.ts": "93dea799867143f34616c12bf6d33ac64c3b1426e1cdb1680270f49ad7861f07",
+    "src/game/state.ts": "4964babbf09861fef472a0f54de009963e3bd896f083a5fee0d4984632bc4089",
+    "src/game/engine.ts": "1157f8d57a714f36a9da1cc5e6fcb6060ca935059c2474a90a52b096e34c42de",
+    "scripts/simulate-campaign.ts": "f1676f034e037b4adb700260245ff46679679e6de4f87c99017b4982f70f5505"
+  },
+  "balance": {
+    "maxLevel": 55,
+    "world": 1600,
+    "home": 800,
+    "autoSaveSeconds": 8,
+    "baseHealth": 650,
+    "baseHealthPerLevel": 260,
+    "wallHealth": 190,
+    "heroHealth": 120,
+    "heroHealthPerLevel": 19,
+    "heroAttack": 18,
+    "heroAttackPerLevel": 3.8,
+    "heroSpeed": 172,
+    "heroRange": 245,
+    "heroInterval": 0.65,
+    "enemyHealthGrowth": 1.085,
+    "enemyDamageGrowth": 1.097,
+    "raidInterval": 300,
+    "campRaidDelay": 25,
+    "raidCountdown": 75,
+    "expeditionKillsForBoss": 14,
+    "dashCooldown": 3.2,
+    "dashDuration": 0.2,
+    "dashInvulnerability": 0.35,
+    "skillCooldown": 9,
+    "skillRadius": 185,
+    "skillDamage": 3.8,
+    "healCooldown": 24,
+    "potionHeal": 0.48,
+    "deathGoldLoss": 0.08,
+    "waveReward": 65,
+    "equipmentBaseCost": 85,
+    "equipmentGrowth": 1.3,
+    "equipmentMax": 18,
+    "xpBase": 75,
+    "xpLinear": 32,
+    "xpQuadratic": 10.5,
+    "upgrades": {
+      "attack": 0.12,
+      "health": 0.15,
+      "speed": 0.12,
+      "range": 18,
+      "move": 0.05,
+      "forge": 0.08
+    },
+    "equipment": {
+      "weapon": 0.16,
+      "armor": 0.13,
+      "critBase": 0.06,
+      "charmCrit": 0.018,
+      "charmXp": 0.035,
+      "critDamage": 1.65
+    },
+    "defense": {
+      "attack": 12,
+      "attackPerLevel": 2.5,
+      "training": 0.25,
+      "interval": 0.95,
+      "soldierRange": 290,
+      "towerRange": 440,
+      "cannonDamage": 2.7,
+      "cannonRadius": 80,
+      "splashDamage": 0.65,
+      "eliteResistance": 0.42,
+      "storage": 0.08,
+      "healing": 0.009,
+      "repair": 0.06,
+      "resting": 0.09
+    },
+    "skillUpgrade": {
+      "max": 8,
+      "baseCost": 100,
+      "crystalFrom": 3,
+      "crystalPerLevel": 3,
+      "damage": 0.5,
+      "cooldown": 0.035
+    },
+    "secondBase": {
+      "gold": 600,
+      "iron": 35,
+      "discount": 0.72
+    },
+    "loot": {
+      "xpGrowth": 0.21,
+      "goldGrowth": 0.11,
+      "resourceBase": 8,
+      "resourceGrowth": 1.1,
+      "chestGold": 60,
+      "chestGoldGrowth": 24,
+      "eventXp": 60,
+      "eventXpGrowth": 15,
+      "bossMaterial": 20
+    },
+    "progression": {
+      "xpGapGrace": 4,
+      "xpGapDecay": 0.11,
+      "xpFloor": 0.08,
+      "healthMultiplier": 1.7,
+      "bossHealthMultiplier": 2.1,
+      "dropDivisor": 4,
+      "dropRareChance": 0.12,
+      "dropRareBonus": 2,
+      "weaponMilestone": 6,
+      "weaponMilestoneBonus": 0.13,
+      "armorMilestoneReduction": 0.06,
+      "forgeDiscount": 0.035,
+      "maxForgeDiscount": 0.35,
+      "supplyAttack": 0.25,
+      "supplyPerBase": 0.022,
+      "supplyPerTraining": 0.006,
+      "supplyXp": 0.2,
+      "supplyDamageReduction": 0.12,
+      "supplyReward": 2,
+      "healerPotionReduction": 0.03,
+      "healerPotionAmount": 0.018,
+      "healerFieldRegen": 0.001,
+      "baseDamageReduction": 0.045,
+      "maxPotionReduction": 0.3,
+      "waveGoldCap": 20,
+      "waveGoldGrowth": 14,
+      "maxRaidDelay": 200,
+      "supplyCap": 12,
+      "garrisonTraining": 0.08,
+      "wallRaidDefense": 0.25,
+      "healerRaidDefense": 0.3,
+      "raidDamageWallReduction": 0.04,
+      "advancedMaterialFrom": 10,
+      "advancedMaterialBase": 6,
+      "advancedMaterialGrowth": 3,
+      "materialMultiplier": {
+        "wood": 1,
+        "iron": 0.45,
+        "crystal": 0.18
+      }
+    },
+    "drop": {
+      "material": 0.55,
+      "equipment": 0.065,
+      "crystal": 0.14
+    }
+  },
+  "methodology": "Actual engine, 50ms steps. Practiced:150ms decisions. Casual:650ms decisions,20% telegraph misses,no bullet sidestep,0.9s hesitation/13s. No resource injection; real purchases/drops/unlocks/raids. +5s wave / +12s expedition menu time. Seeded random; 6h or 20min no level/discovery cutoff. Omit means do not PURCHASE that upgrade; equipment drops and unupgraded skill remain available.",
+  "results": [
+    {
+      "style": "balanced",
+      "seed": 17,
+      "ability": "casual",
+      "omit": "base",
+      "level": 55,
+      "completed": true,
+      "minutes": 46.17,
+      "completeMinute": 37.97,
+      "level55Minute": 46.17,
+      "deaths": 5,
+      "losses": 0,
+      "waves": 16,
+      "expeditions": 41,
+      "baseMinutes": 8.24,
+      "expeditionMinutes": 28.39,
+      "gold": 12616,
+      "materials": {
+        "wood": 1343,
+        "iron": 1318,
+        "crystal": 778
+      },
+      "equipment": {
+        "weapon": 18,
+        "armor": 18,
+        "charm": 18
+      },
+      "upgrades": {
+        "attack": 18,
+        "speed": 12,
+        "range": 8,
+        "health": 17,
+        "move": 8,
+        "soldiers": 10,
+        "training": 14,
+        "wall": 15,
+        "tower": 8,
+        "cannon": 8,
+        "healer": 8,
+        "storage": 8,
+        "forge": 12,
+        "base": 0
+      },
+      "discoveries": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "bosses": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "purchases": [
+        {
+          "minute": 0.37,
+          "level": 2,
+          "item": "attack",
+          "rank": 1,
+          "gold": 45
+        },
+        {
+          "minute": 0.37,
+          "level": 2,
+          "item": "health",
+          "rank": 1,
+          "gold": 45
+        },
+        {
+          "minute": 0.37,
+          "level": 2,
+          "item": "speed",
+          "rank": 1,
+          "gold": 60
+        },
+        {
+          "minute": 0.77,
+          "level": 3,
+          "item": "weapon",
+          "rank": 1,
+          "gold": 85
+        },
+        {
+          "minute": 0.77,
+          "level": 3,
+          "item": "armor",
+          "rank": 1,
+          "gold": 85
+        },
+        {
+          "minute": 1.81,
+          "level": 5,
+          "item": "attack",
+          "rank": 2,
+          "gold": 61
+        },
+        {
+          "minute": 1.81,
+          "level": 5,
+          "item": "soldiers",
+          "rank": 1,
+          "gold": 85
+        },
+        {
+          "minute": 1.81,
+          "level": 5,
+          "item": "health",
+          "rank": 2,
+          "gold": 61
+        },
+        {
+          "minute": 1.81,
+          "level": 5,
+          "item": "wall",
+          "rank": 1,
+          "gold": 70
+        },
+        {
+          "minute": 1.81,
+          "level": 5,
+          "item": "training",
+          "rank": 1,
+          "gold": 80
+        },
+        {
+          "minute": 1.81,
+          "level": 5,
+          "item": "speed",
+          "rank": 2,
+          "gold": 84
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "weapon",
+          "rank": 2,
+          "gold": 111
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "skill",
+          "rank": 1,
+          "gold": 100
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "storage",
+          "rank": 1,
+          "gold": 95
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "attack",
+          "rank": 3,
+          "gold": 82
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "range",
+          "rank": 1,
+          "gold": 65
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "move",
+          "rank": 1,
+          "gold": 65
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "armor",
+          "rank": 2,
+          "gold": 111
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "health",
+          "rank": 3,
+          "gold": 82
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "weapon",
+          "rank": 3,
+          "gold": 144
+        },
+        {
+          "minute": 4.2,
+          "level": 11,
+          "item": "tower",
+          "rank": 1,
+          "gold": 130
+        },
+        {
+          "minute": 4.2,
+          "level": 11,
+          "item": "soldiers",
+          "rank": 2,
+          "gold": 115
+        },
+        {
+          "minute": 4.2,
+          "level": 11,
+          "item": "speed",
+          "rank": 3,
+          "gold": 118
+        },
+        {
+          "minute": 4.2,
+          "level": 11,
+          "item": "attack",
+          "rank": 4,
+          "gold": 111
+        },
+        {
+          "minute": 4.2,
+          "level": 11,
+          "item": "wall",
+          "rank": 2,
+          "gold": 95
+        },
+        {
+          "minute": 4.2,
+          "level": 11,
+          "item": "training",
+          "rank": 2,
+          "gold": 109
+        },
+        {
+          "minute": 4.2,
+          "level": 11,
+          "item": "armor",
+          "rank": 3,
+          "gold": 144
+        },
+        {
+          "minute": 4.2,
+          "level": 11,
+          "item": "health",
+          "rank": 4,
+          "gold": 111
+        },
+        {
+          "minute": 4.2,
+          "level": 11,
+          "item": "storage",
+          "rank": 2,
+          "gold": 133
+        },
+        {
+          "minute": 4.2,
+          "level": 11,
+          "item": "range",
+          "rank": 2,
+          "gold": 94
+        },
+        {
+          "minute": 4.2,
+          "level": 11,
+          "item": "attack",
+          "rank": 5,
+          "gold": 149
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "healer",
+          "rank": 1,
+          "gold": 110
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "tower",
+          "rank": 2,
+          "gold": 189
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "move",
+          "rank": 2,
+          "gold": 98
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "speed",
+          "rank": 4,
+          "gold": 165
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "soldiers",
+          "rank": 3,
+          "gold": 155
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "wall",
+          "rank": 3,
+          "gold": 128
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "armor",
+          "rank": 4,
+          "gold": 187
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "training",
+          "rank": 3,
+          "gold": 148
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "health",
+          "rank": 5,
+          "gold": 149
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "healer",
+          "rank": 2,
+          "gold": 154
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "attack",
+          "rank": 6,
+          "gold": 202
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "storage",
+          "rank": 3,
+          "gold": 186
+        },
+        {
+          "minute": 5.32,
+          "level": 13,
+          "item": "range",
+          "rank": 3,
+          "gold": 137
+        },
+        {
+          "minute": 5.77,
+          "level": 14,
+          "item": "speed",
+          "rank": 5,
+          "gold": 230
+        },
+        {
+          "minute": 5.77,
+          "level": 14,
+          "item": "soldiers",
+          "rank": 4,
+          "gold": 209
+        },
+        {
+          "minute": 5.77,
+          "level": 14,
+          "item": "charm",
+          "rank": 4,
+          "gold": 187
+        },
+        {
+          "minute": 5.77,
+          "level": 14,
+          "item": "wall",
+          "rank": 4,
+          "gold": 172
+        },
+        {
+          "minute": 6.86,
+          "level": 16,
+          "item": "forge",
+          "rank": 1,
+          "gold": 150
+        },
+        {
+          "minute": 6.86,
+          "level": 16,
+          "item": "forge",
+          "rank": 2,
+          "gold": 210
+        },
+        {
+          "minute": 6.86,
+          "level": 16,
+          "item": "weapon",
+          "rank": 5,
+          "gold": 226
+        },
+        {
+          "minute": 6.86,
+          "level": 16,
+          "item": "armor",
+          "rank": 5,
+          "gold": 226
+        },
+        {
+          "minute": 6.86,
+          "level": 16,
+          "item": "weapon",
+          "rank": 6,
+          "gold": 294
+        },
+        {
+          "minute": 6.86,
+          "level": 16,
+          "item": "tower",
+          "rank": 3,
+          "gold": 273
+        },
+        {
+          "minute": 6.86,
+          "level": 16,
+          "item": "health",
+          "rank": 6,
+          "gold": 202
+        },
+        {
+          "minute": 6.86,
+          "level": 16,
+          "item": "move",
+          "rank": 3,
+          "gold": 146
+        },
+        {
+          "minute": 6.86,
+          "level": 16,
+          "item": "training",
+          "rank": 4,
+          "gold": 201
+        },
+        {
+          "minute": 6.86,
+          "level": 16,
+          "item": "forge",
+          "rank": 3,
+          "gold": 294
+        },
+        {
+          "minute": 6.86,
+          "level": 16,
+          "item": "skill",
+          "rank": 2,
+          "gold": 400
+        },
+        {
+          "minute": 7.75,
+          "level": 18,
+          "item": "attack",
+          "rank": 7,
+          "gold": 272
+        },
+        {
+          "minute": 7.75,
+          "level": 18,
+          "item": "armor",
+          "rank": 6,
+          "gold": 282
+        },
+        {
+          "minute": 7.75,
+          "level": 18,
+          "item": "weapon",
+          "rank": 7,
+          "gold": 367
+        },
+        {
+          "minute": 7.75,
+          "level": 18,
+          "item": "charm",
+          "rank": 5,
+          "gold": 217
+        },
+        {
+          "minute": 7.75,
+          "level": 18,
+          "item": "healer",
+          "rank": 3,
+          "gold": 216
+        },
+        {
+          "minute": 7.75,
+          "level": 18,
+          "item": "storage",
+          "rank": 4,
+          "gold": 261
+        },
+        {
+          "minute": 7.75,
+          "level": 18,
+          "item": "speed",
+          "rank": 6,
+          "gold": 323
+        },
+        {
+          "minute": 7.75,
+          "level": 18,
+          "item": "soldiers",
+          "rank": 5,
+          "gold": 282
+        },
+        {
+          "minute": 7.75,
+          "level": 18,
+          "item": "health",
+          "rank": 7,
+          "gold": 272
+        },
+        {
+          "minute": 8.61,
+          "level": 19,
+          "item": "wall",
+          "rank": 5,
+          "gold": 233
+        },
+        {
+          "minute": 8.61,
+          "level": 19,
+          "item": "training",
+          "rank": 5,
+          "gold": 274
+        },
+        {
+          "minute": 8.61,
+          "level": 19,
+          "item": "range",
+          "rank": 4,
+          "gold": 198
+        },
+        {
+          "minute": 8.61,
+          "level": 19,
+          "item": "tower",
+          "rank": 4,
+          "gold": 396
+        },
+        {
+          "minute": 8.61,
+          "level": 19,
+          "item": "attack",
+          "rank": 8,
+          "gold": 368
+        },
+        {
+          "minute": 8.61,
+          "level": 19,
+          "item": "armor",
+          "rank": 7,
+          "gold": 367
+        },
+        {
+          "minute": 8.61,
+          "level": 19,
+          "item": "forge",
+          "rank": 4,
+          "gold": 412
+        },
+        {
+          "minute": 8.61,
+          "level": 19,
+          "item": "weapon",
+          "rank": 8,
+          "gold": 459
+        },
+        {
+          "minute": 8.61,
+          "level": 19,
+          "item": "move",
+          "rank": 4,
+          "gold": 219
+        },
+        {
+          "minute": 9.09,
+          "level": 20,
+          "item": "charm",
+          "rank": 6,
+          "gold": 271
+        },
+        {
+          "minute": 9.09,
+          "level": 20,
+          "item": "speed",
+          "rank": 7,
+          "gold": 452
+        },
+        {
+          "minute": 9.09,
+          "level": 20,
+          "item": "health",
+          "rank": 8,
+          "gold": 368
+        },
+        {
+          "minute": 10,
+          "level": 21,
+          "item": "healer",
+          "rank": 4,
+          "gold": 302
+        },
+        {
+          "minute": 10,
+          "level": 21,
+          "item": "wall",
+          "rank": 6,
+          "gold": 314
+        },
+        {
+          "minute": 10,
+          "level": 21,
+          "item": "weapon",
+          "rank": 9,
+          "gold": 596
+        },
+        {
+          "minute": 10,
+          "level": 21,
+          "item": "armor",
+          "rank": 8,
+          "gold": 459
+        },
+        {
+          "minute": 10,
+          "level": 21,
+          "item": "training",
+          "rank": 6,
+          "gold": 372
+        },
+        {
+          "minute": 10,
+          "level": 21,
+          "item": "attack",
+          "rank": 9,
+          "gold": 496
+        },
+        {
+          "minute": 10,
+          "level": 21,
+          "item": "charm",
+          "rank": 7,
+          "gold": 353
+        },
+        {
+          "minute": 10,
+          "level": 21,
+          "item": "health",
+          "rank": 9,
+          "gold": 496
+        },
+        {
+          "minute": 10.89,
+          "level": 23,
+          "item": "soldiers",
+          "rank": 6,
+          "gold": 381
+        },
+        {
+          "minute": 10.89,
+          "level": 23,
+          "item": "tower",
+          "rank": 5,
+          "gold": 575
+        },
+        {
+          "minute": 10.89,
+          "level": 23,
+          "item": "forge",
+          "rank": 5,
+          "gold": 576
+        },
+        {
+          "minute": 10.89,
+          "level": 23,
+          "item": "skill",
+          "rank": 3,
+          "gold": 900
+        },
+        {
+          "minute": 10.89,
+          "level": 23,
+          "item": "wall",
+          "rank": 7,
+          "gold": 424
+        },
+        {
+          "minute": 11.85,
+          "level": 24,
+          "item": "weapon",
+          "rank": 10,
+          "gold": 744
+        },
+        {
+          "minute": 11.85,
+          "level": 24,
+          "item": "armor",
+          "rank": 9,
+          "gold": 572
+        },
+        {
+          "minute": 11.85,
+          "level": 24,
+          "item": "speed",
+          "rank": 8,
+          "gold": 632
+        },
+        {
+          "minute": 11.85,
+          "level": 24,
+          "item": "charm",
+          "rank": 8,
+          "gold": 440
+        },
+        {
+          "minute": 11.85,
+          "level": 24,
+          "item": "attack",
+          "rank": 10,
+          "gold": 670
+        },
+        {
+          "minute": 11.85,
+          "level": 24,
+          "item": "training",
+          "rank": 7,
+          "gold": 506
+        },
+        {
+          "minute": 11.85,
+          "level": 24,
+          "item": "health",
+          "rank": 10,
+          "gold": 670
+        },
+        {
+          "minute": 12.46,
+          "level": 25,
+          "item": "storage",
+          "rank": 5,
+          "gold": 365
+        },
+        {
+          "minute": 12.46,
+          "level": 25,
+          "item": "range",
+          "rank": 5,
+          "gold": 287
+        },
+        {
+          "minute": 12.46,
+          "level": 25,
+          "item": "move",
+          "rank": 5,
+          "gold": 329
+        },
+        {
+          "minute": 12.46,
+          "level": 25,
+          "item": "healer",
+          "rank": 5,
+          "gold": 423
+        },
+        {
+          "minute": 13.35,
+          "level": 26,
+          "item": "weapon",
+          "rank": 11,
+          "gold": 967
+        },
+        {
+          "minute": 13.35,
+          "level": 26,
+          "item": "armor",
+          "rank": 10,
+          "gold": 744
+        },
+        {
+          "minute": 13.35,
+          "level": 26,
+          "item": "forge",
+          "rank": 6,
+          "gold": 807
+        },
+        {
+          "minute": 13.35,
+          "level": 26,
+          "item": "tower",
+          "rank": 6,
+          "gold": 833
+        },
+        {
+          "minute": 13.35,
+          "level": 26,
+          "item": "charm",
+          "rank": 9,
+          "gold": 548
+        },
+        {
+          "minute": 14.19,
+          "level": 27,
+          "item": "speed",
+          "rank": 9,
+          "gold": 885
+        },
+        {
+          "minute": 14.19,
+          "level": 27,
+          "item": "wall",
+          "rank": 8,
+          "gold": 572
+        },
+        {
+          "minute": 14.19,
+          "level": 27,
+          "item": "training",
+          "rank": 8,
+          "gold": 688
+        },
+        {
+          "minute": 14.19,
+          "level": 27,
+          "item": "weapon",
+          "rank": 12,
+          "gold": 1203
+        },
+        {
+          "minute": 14.19,
+          "level": 27,
+          "item": "armor",
+          "rank": 11,
+          "gold": 926
+        },
+        {
+          "minute": 14.96,
+          "level": 28,
+          "item": "charm",
+          "rank": 10,
+          "gold": 712
+        },
+        {
+          "minute": 14.96,
+          "level": 28,
+          "item": "forge",
+          "rank": 7,
+          "gold": 1129
+        },
+        {
+          "minute": 14.96,
+          "level": 28,
+          "item": "wall",
+          "rank": 9,
+          "gold": 772
+        },
+        {
+          "minute": 14.96,
+          "level": 28,
+          "item": "armor",
+          "rank": 12,
+          "gold": 1150
+        },
+        {
+          "minute": 15.45,
+          "level": 29,
+          "item": "speed",
+          "rank": 10,
+          "gold": 1240
+        },
+        {
+          "minute": 16.31,
+          "level": 30,
+          "item": "cannon",
+          "rank": 1,
+          "gold": 280
+        },
+        {
+          "minute": 16.31,
+          "level": 30,
+          "item": "cannon",
+          "rank": 2,
+          "gold": 420
+        },
+        {
+          "minute": 16.31,
+          "level": 30,
+          "item": "cannon",
+          "rank": 3,
+          "gold": 630
+        },
+        {
+          "minute": 16.31,
+          "level": 30,
+          "item": "cannon",
+          "rank": 4,
+          "gold": 945
+        },
+        {
+          "minute": 16.31,
+          "level": 30,
+          "item": "skill",
+          "rank": 4,
+          "gold": 1600
+        },
+        {
+          "minute": 16.31,
+          "level": 30,
+          "item": "training",
+          "rank": 9,
+          "gold": 936
+        },
+        {
+          "minute": 17.1,
+          "level": 31,
+          "item": "cannon",
+          "rank": 5,
+          "gold": 1418
+        },
+        {
+          "minute": 17.1,
+          "level": 31,
+          "item": "tower",
+          "rank": 7,
+          "gold": 1208
+        },
+        {
+          "minute": 17.1,
+          "level": 31,
+          "item": "weapon",
+          "rank": 13,
+          "gold": 1495
+        },
+        {
+          "minute": 18,
+          "level": 32,
+          "item": "charm",
+          "rank": 11,
+          "gold": 885
+        },
+        {
+          "minute": 18,
+          "level": 32,
+          "item": "weapon",
+          "rank": 14,
+          "gold": 1944
+        },
+        {
+          "minute": 18,
+          "level": 32,
+          "item": "wall",
+          "rank": 10,
+          "gold": 1043
+        },
+        {
+          "minute": 18,
+          "level": 32,
+          "item": "training",
+          "rank": 10,
+          "gold": 1273
+        },
+        {
+          "minute": 18.47,
+          "level": 32,
+          "item": "armor",
+          "rank": 13,
+          "gold": 1495
+        },
+        {
+          "minute": 19.2,
+          "level": 33,
+          "item": "storage",
+          "rank": 6,
+          "gold": 511
+        },
+        {
+          "minute": 19.2,
+          "level": 33,
+          "item": "range",
+          "rank": 6,
+          "gold": 417
+        },
+        {
+          "minute": 19.2,
+          "level": 33,
+          "item": "move",
+          "rank": 6,
+          "gold": 494
+        },
+        {
+          "minute": 19.2,
+          "level": 33,
+          "item": "healer",
+          "rank": 6,
+          "gold": 592
+        },
+        {
+          "minute": 19.2,
+          "level": 33,
+          "item": "forge",
+          "rank": 8,
+          "gold": 1581
+        },
+        {
+          "minute": 19.2,
+          "level": 33,
+          "item": "charm",
+          "rank": 12,
+          "gold": 1097
+        },
+        {
+          "minute": 19.99,
+          "level": 34,
+          "item": "soldiers",
+          "rank": 7,
+          "gold": 515
+        },
+        {
+          "minute": 19.99,
+          "level": 34,
+          "item": "cannon",
+          "rank": 6,
+          "gold": 2126
+        },
+        {
+          "minute": 20.77,
+          "level": 34,
+          "item": "skill",
+          "rank": 5,
+          "gold": 2500
+        },
+        {
+          "minute": 20.77,
+          "level": 34,
+          "item": "armor",
+          "rank": 14,
+          "gold": 1854
+        },
+        {
+          "minute": 21.39,
+          "level": 35,
+          "item": "charm",
+          "rank": 13,
+          "gold": 1426
+        },
+        {
+          "minute": 21.39,
+          "level": 35,
+          "item": "forge",
+          "rank": 9,
+          "gold": 2214
+        },
+        {
+          "minute": 22.11,
+          "level": 36,
+          "item": "soldiers",
+          "rank": 8,
+          "gold": 695
+        },
+        {
+          "minute": 22.11,
+          "level": 36,
+          "item": "tower",
+          "rank": 8,
+          "gold": 1752
+        },
+        {
+          "minute": 22.11,
+          "level": 36,
+          "item": "charm",
+          "rank": 14,
+          "gold": 1763
+        },
+        {
+          "minute": 22.86,
+          "level": 37,
+          "item": "cannon",
+          "rank": 7,
+          "gold": 3189
+        },
+        {
+          "minute": 23.76,
+          "level": 37,
+          "item": "skill",
+          "rank": 6,
+          "gold": 3600
+        },
+        {
+          "minute": 23.76,
+          "level": 37,
+          "item": "forge",
+          "rank": 10,
+          "gold": 3099
+        },
+        {
+          "minute": 25.19,
+          "level": 39,
+          "item": "weapon",
+          "rank": 15,
+          "gold": 2175
+        },
+        {
+          "minute": 25.19,
+          "level": 39,
+          "item": "weapon",
+          "rank": 16,
+          "gold": 2828
+        },
+        {
+          "minute": 25.19,
+          "level": 39,
+          "item": "armor",
+          "rank": 15,
+          "gold": 2175
+        },
+        {
+          "minute": 25.19,
+          "level": 39,
+          "item": "armor",
+          "rank": 16,
+          "gold": 2828
+        },
+        {
+          "minute": 25.97,
+          "level": 40,
+          "item": "weapon",
+          "rank": 17,
+          "gold": 3676
+        },
+        {
+          "minute": 26.95,
+          "level": 41,
+          "item": "storage",
+          "rank": 7,
+          "gold": 715
+        },
+        {
+          "minute": 26.95,
+          "level": 41,
+          "item": "range",
+          "rank": 7,
+          "gold": 604
+        },
+        {
+          "minute": 26.95,
+          "level": 41,
+          "item": "healer",
+          "rank": 7,
+          "gold": 828
+        },
+        {
+          "minute": 26.95,
+          "level": 41,
+          "item": "move",
+          "rank": 7,
+          "gold": 740
+        },
+        {
+          "minute": 26.95,
+          "level": 41,
+          "item": "charm",
+          "rank": 15,
+          "gold": 2175
+        },
+        {
+          "minute": 26.95,
+          "level": 41,
+          "item": "charm",
+          "rank": 16,
+          "gold": 2828
+        },
+        {
+          "minute": 27.49,
+          "level": 41,
+          "item": "armor",
+          "rank": 17,
+          "gold": 3676
+        },
+        {
+          "minute": 28.39,
+          "level": 42,
+          "item": "skill",
+          "rank": 7,
+          "gold": 4900
+        },
+        {
+          "minute": 29.15,
+          "level": 43,
+          "item": "soldiers",
+          "rank": 9,
+          "gold": 938
+        },
+        {
+          "minute": 29.15,
+          "level": 43,
+          "item": "weapon",
+          "rank": 18,
+          "gold": 4779
+        },
+        {
+          "minute": 30,
+          "level": 43,
+          "item": "attack",
+          "rank": 11,
+          "gold": 905
+        },
+        {
+          "minute": 30,
+          "level": 43,
+          "item": "health",
+          "rank": 11,
+          "gold": 905
+        },
+        {
+          "minute": 30,
+          "level": 43,
+          "item": "attack",
+          "rank": 12,
+          "gold": 1221
+        },
+        {
+          "minute": 30,
+          "level": 43,
+          "item": "health",
+          "rank": 12,
+          "gold": 1221
+        },
+        {
+          "minute": 30,
+          "level": 43,
+          "item": "attack",
+          "rank": 13,
+          "gold": 1649
+        },
+        {
+          "minute": 30.7,
+          "level": 44,
+          "item": "speed",
+          "rank": 11,
+          "gold": 1736
+        },
+        {
+          "minute": 30.7,
+          "level": 44,
+          "item": "health",
+          "rank": 13,
+          "gold": 1649
+        },
+        {
+          "minute": 30.7,
+          "level": 44,
+          "item": "wall",
+          "rank": 11,
+          "gold": 1407
+        },
+        {
+          "minute": 31.46,
+          "level": 44,
+          "item": "attack",
+          "rank": 14,
+          "gold": 2226
+        },
+        {
+          "minute": 31.46,
+          "level": 44,
+          "item": "speed",
+          "rank": 12,
+          "gold": 2430
+        },
+        {
+          "minute": 32.2,
+          "level": 45,
+          "item": "training",
+          "rank": 11,
+          "gold": 1732
+        },
+        {
+          "minute": 32.2,
+          "level": 45,
+          "item": "health",
+          "rank": 14,
+          "gold": 2226
+        },
+        {
+          "minute": 32.2,
+          "level": 45,
+          "item": "attack",
+          "rank": 15,
+          "gold": 3005
+        },
+        {
+          "minute": 33.08,
+          "level": 46,
+          "item": "wall",
+          "rank": 12,
+          "gold": 1900
+        },
+        {
+          "minute": 33.08,
+          "level": 46,
+          "item": "training",
+          "rank": 12,
+          "gold": 2355
+        },
+        {
+          "minute": 33.62,
+          "level": 46,
+          "item": "health",
+          "rank": 15,
+          "gold": 3005
+        },
+        {
+          "minute": 34.46,
+          "level": 47,
+          "item": "attack",
+          "rank": 16,
+          "gold": 4057
+        },
+        {
+          "minute": 34.46,
+          "level": 47,
+          "item": "wall",
+          "rank": 13,
+          "gold": 2565
+        },
+        {
+          "minute": 35.27,
+          "level": 47,
+          "item": "cannon",
+          "rank": 8,
+          "gold": 4784
+        },
+        {
+          "minute": 36.26,
+          "level": 48,
+          "item": "training",
+          "rank": 13,
+          "gold": 3203
+        },
+        {
+          "minute": 36.26,
+          "level": 48,
+          "item": "forge",
+          "rank": 11,
+          "gold": 4339
+        },
+        {
+          "minute": 36.78,
+          "level": 48,
+          "item": "health",
+          "rank": 16,
+          "gold": 4057
+        },
+        {
+          "minute": 37.97,
+          "level": 49,
+          "item": "storage",
+          "rank": 8,
+          "gold": 1001
+        },
+        {
+          "minute": 37.97,
+          "level": 49,
+          "item": "range",
+          "rank": 8,
+          "gold": 876
+        },
+        {
+          "minute": 37.97,
+          "level": 49,
+          "item": "healer",
+          "rank": 8,
+          "gold": 1160
+        },
+        {
+          "minute": 37.97,
+          "level": 49,
+          "item": "move",
+          "rank": 8,
+          "gold": 1111
+        },
+        {
+          "minute": 37.97,
+          "level": 49,
+          "item": "attack",
+          "rank": 17,
+          "gold": 5477
+        },
+        {
+          "minute": 38.87,
+          "level": 50,
+          "item": "soldiers",
+          "rank": 10,
+          "gold": 1266
+        },
+        {
+          "minute": 38.87,
+          "level": 50,
+          "item": "armor",
+          "rank": 18,
+          "gold": 4779
+        },
+        {
+          "minute": 38.87,
+          "level": 50,
+          "item": "wall",
+          "rank": 14,
+          "gold": 3463
+        },
+        {
+          "minute": 40,
+          "level": 51,
+          "item": "skill",
+          "rank": 8,
+          "gold": 6400
+        },
+        {
+          "minute": 40.67,
+          "level": 51,
+          "item": "wall",
+          "rank": 15,
+          "gold": 4675
+        },
+        {
+          "minute": 41.8,
+          "level": 52,
+          "item": "charm",
+          "rank": 17,
+          "gold": 3676
+        },
+        {
+          "minute": 42.57,
+          "level": 52,
+          "item": "training",
+          "rank": 14,
+          "gold": 4356
+        },
+        {
+          "minute": 42.57,
+          "level": 52,
+          "item": "charm",
+          "rank": 18,
+          "gold": 4779
+        },
+        {
+          "minute": 43.83,
+          "level": 53,
+          "item": "health",
+          "rank": 17,
+          "gold": 5477
+        },
+        {
+          "minute": 44.4,
+          "level": 53,
+          "item": "forge",
+          "rank": 12,
+          "gold": 6074
+        },
+        {
+          "minute": 45.32,
+          "level": 54,
+          "item": "attack",
+          "rank": 18,
+          "gold": 7394
+        }
+      ],
+      "maxPurchaseGap": 1.43,
+      "milestones": [
+        {
+          "level": 1,
+          "minute": 0,
+          "gold": 35,
+          "region": -1,
+          "deaths": 0,
+          "xp": 0,
+          "weapon": 0,
+          "armor": 0,
+          "hp": 120,
+          "attack": 18,
+          "wave": 0
+        },
+        {
+          "level": 2,
+          "minute": 0.35,
+          "gold": 87,
+          "region": -1,
+          "deaths": 0,
+          "xp": 9,
+          "weapon": 0,
+          "armor": 0,
+          "hp": 139,
+          "attack": 22,
+          "wave": 0
+        },
+        {
+          "level": 3,
+          "minute": 0.75,
+          "gold": 98,
+          "region": -1,
+          "deaths": 0,
+          "xp": 13,
+          "weapon": 0,
+          "armor": 0,
+          "hp": 182,
+          "attack": 29,
+          "wave": 1
+        },
+        {
+          "level": 4,
+          "minute": 1.21,
+          "gold": 142,
+          "region": -1,
+          "deaths": 0,
+          "xp": 13,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 227,
+          "attack": 38,
+          "wave": 2
+        },
+        {
+          "level": 5,
+          "minute": 1.81,
+          "gold": 325,
+          "region": -1,
+          "deaths": 0,
+          "xp": 116,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 251,
+          "attack": 42,
+          "wave": 2
+        },
+        {
+          "level": 6,
+          "minute": 2.24,
+          "gold": 230,
+          "region": 0,
+          "deaths": 0,
+          "xp": 13,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 307,
+          "attack": 65,
+          "wave": 3
+        },
+        {
+          "level": 7,
+          "minute": 2.47,
+          "gold": 406,
+          "region": 0,
+          "deaths": 0,
+          "xp": 24,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 335,
+          "attack": 72,
+          "wave": 3
+        },
+        {
+          "level": 8,
+          "minute": 3.09,
+          "gold": 917,
+          "region": 0,
+          "deaths": 0,
+          "xp": 510,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 362,
+          "attack": 78,
+          "wave": 3
+        },
+        {
+          "level": 9,
+          "minute": 3.46,
+          "gold": 189,
+          "region": 1,
+          "deaths": 0,
+          "xp": 22,
+          "weapon": 3,
+          "armor": 2,
+          "hp": 465,
+          "attack": 112,
+          "wave": 3
+        },
+        {
+          "level": 10,
+          "minute": 3.89,
+          "gold": 851,
+          "region": 1,
+          "deaths": 0,
+          "xp": 24,
+          "weapon": 4,
+          "armor": 2,
+          "hp": 498,
+          "attack": 131,
+          "wave": 3
+        },
+        {
+          "level": 11,
+          "minute": 4.12,
+          "gold": 1283,
+          "region": 1,
+          "deaths": 0,
+          "xp": 46,
+          "weapon": 4,
+          "armor": 2,
+          "hp": 530,
+          "attack": 141,
+          "wave": 3
+        },
+        {
+          "level": 12,
+          "minute": 4.72,
+          "gold": 698,
+          "region": 2,
+          "deaths": 0,
+          "xp": 27,
+          "weapon": 4,
+          "armor": 3,
+          "hp": 655,
+          "attack": 169,
+          "wave": 3
+        },
+        {
+          "level": 13,
+          "minute": 5.28,
+          "gold": 1473,
+          "region": 2,
+          "deaths": 0,
+          "xp": 43,
+          "weapon": 4,
+          "armor": 3,
+          "hp": 693,
+          "attack": 180,
+          "wave": 3
+        },
+        {
+          "level": 14,
+          "minute": 5.58,
+          "gold": 208,
+          "region": -1,
+          "deaths": 0,
+          "xp": 48,
+          "weapon": 4,
+          "armor": 4,
+          "hp": 833,
+          "attack": 159,
+          "wave": 3
+        },
+        {
+          "level": 15,
+          "minute": 6.22,
+          "gold": 929,
+          "region": 3,
+          "deaths": 0,
+          "xp": 240,
+          "weapon": 4,
+          "armor": 4,
+          "hp": 876,
+          "attack": 213,
+          "wave": 4
+        },
+        {
+          "level": 16,
+          "minute": 6.84,
+          "gold": 2016,
+          "region": 3,
+          "deaths": 0,
+          "xp": 78,
+          "weapon": 4,
+          "armor": 4,
+          "hp": 919,
+          "attack": 224,
+          "wave": 4
+        },
+        {
+          "level": 17,
+          "minute": 7.27,
+          "gold": 933,
+          "region": 3,
+          "deaths": 0,
+          "xp": 316,
+          "weapon": 6,
+          "armor": 5,
+          "hp": 1081,
+          "attack": 331,
+          "wave": 4
+        },
+        {
+          "level": 18,
+          "minute": 7.75,
+          "gold": 2543,
+          "region": 3,
+          "deaths": 0,
+          "xp": 1280,
+          "weapon": 6,
+          "armor": 5,
+          "hp": 1130,
+          "attack": 347,
+          "wave": 4
+        },
+        {
+          "level": 19,
+          "minute": 8.24,
+          "gold": 1449,
+          "region": 4,
+          "deaths": 0,
+          "xp": 213,
+          "weapon": 7,
+          "armor": 6,
+          "hp": 1307,
+          "attack": 398,
+          "wave": 4
+        },
+        {
+          "level": 20,
+          "minute": 8.8,
+          "gold": 181,
+          "region": -1,
+          "deaths": 0,
+          "xp": 16,
+          "weapon": 8,
+          "armor": 7,
+          "hp": 1424,
+          "attack": 363,
+          "wave": 4
+        },
+        {
+          "level": 21,
+          "minute": 9.58,
+          "gold": 1594,
+          "region": 4,
+          "deaths": 0,
+          "xp": 86,
+          "weapon": 8,
+          "armor": 7,
+          "hp": 1555,
+          "attack": 484,
+          "wave": 5
+        },
+        {
+          "level": 22,
+          "minute": 10.31,
+          "gold": 252,
+          "region": 4,
+          "deaths": 0,
+          "xp": 242,
+          "weapon": 9,
+          "armor": 8,
+          "hp": 1759,
+          "attack": 546,
+          "wave": 5
+        },
+        {
+          "level": 23,
+          "minute": 10.89,
+          "gold": 2938,
+          "region": 4,
+          "deaths": 0,
+          "xp": 743,
+          "weapon": 9,
+          "armor": 8,
+          "hp": 1824,
+          "attack": 567,
+          "wave": 5
+        },
+        {
+          "level": 24,
+          "minute": 11.54,
+          "gold": 2664,
+          "region": 5,
+          "deaths": 0,
+          "xp": 61,
+          "weapon": 9,
+          "armor": 8,
+          "hp": 1888,
+          "attack": 600,
+          "wave": 5
+        },
+        {
+          "level": 25,
+          "minute": 12.27,
+          "gold": 664,
+          "region": -1,
+          "deaths": 0,
+          "xp": 30,
+          "weapon": 10,
+          "armor": 9,
+          "hp": 2114,
+          "attack": 518,
+          "wave": 5
+        },
+        {
+          "level": 26,
+          "minute": 13.12,
+          "gold": 2940,
+          "region": 5,
+          "deaths": 0,
+          "xp": 156,
+          "weapon": 10,
+          "armor": 9,
+          "hp": 2184,
+          "attack": 693,
+          "wave": 6
+        },
+        {
+          "level": 27,
+          "minute": 13.85,
+          "gold": 2200,
+          "region": 5,
+          "deaths": 0,
+          "xp": 518,
+          "weapon": 11,
+          "armor": 10,
+          "hp": 2333,
+          "attack": 757,
+          "wave": 6
+        },
+        {
+          "level": 28,
+          "minute": 14.59,
+          "gold": 1439,
+          "region": 5,
+          "deaths": 0,
+          "xp": 32,
+          "weapon": 12,
+          "armor": 11,
+          "hp": 2488,
+          "attack": 907,
+          "wave": 6
+        },
+        {
+          "level": 29,
+          "minute": 15.32,
+          "gold": 764,
+          "region": -1,
+          "deaths": 0,
+          "xp": 48,
+          "weapon": 12,
+          "armor": 12,
+          "hp": 2647,
+          "attack": 734,
+          "wave": 6
+        },
+        {
+          "level": 30,
+          "minute": 16.29,
+          "gold": 3887,
+          "region": 6,
+          "deaths": 0,
+          "xp": 63,
+          "weapon": 12,
+          "armor": 12,
+          "hp": 2724,
+          "attack": 981,
+          "wave": 7
+        },
+        {
+          "level": 31,
+          "minute": 17.01,
+          "gold": 3246,
+          "region": 6,
+          "deaths": 0,
+          "xp": 53,
+          "weapon": 12,
+          "armor": 12,
+          "hp": 2801,
+          "attack": 1015,
+          "wave": 7
+        },
+        {
+          "level": 32,
+          "minute": 17.77,
+          "gold": 3781,
+          "region": 6,
+          "deaths": 0,
+          "xp": 191,
+          "weapon": 13,
+          "armor": 12,
+          "hp": 2879,
+          "attack": 828,
+          "wave": 7
+        },
+        {
+          "level": 33,
+          "minute": 18.88,
+          "gold": 2387,
+          "region": 6,
+          "deaths": 0,
+          "xp": 144,
+          "weapon": 14,
+          "armor": 13,
+          "hp": 3050,
+          "attack": 1152,
+          "wave": 8
+        },
+        {
+          "level": 34,
+          "minute": 19.65,
+          "gold": 2633,
+          "region": 7,
+          "deaths": 0,
+          "xp": 322,
+          "weapon": 14,
+          "armor": 13,
+          "hp": 3130,
+          "attack": 1202,
+          "wave": 8
+        },
+        {
+          "level": 35,
+          "minute": 20.89,
+          "gold": 1042,
+          "region": -1,
+          "deaths": 1,
+          "xp": 166,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3309,
+          "attack": 942,
+          "wave": 8
+        },
+        {
+          "level": 36,
+          "minute": 21.91,
+          "gold": 3605,
+          "region": 7,
+          "deaths": 1,
+          "xp": 1143,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3391,
+          "attack": 1286,
+          "wave": 9
+        },
+        {
+          "level": 37,
+          "minute": 22.86,
+          "gold": 6052,
+          "region": 7,
+          "deaths": 1,
+          "xp": 4233,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3473,
+          "attack": 1318,
+          "wave": 9
+        },
+        {
+          "level": 38,
+          "minute": 23.9,
+          "gold": 1195,
+          "region": -1,
+          "deaths": 1,
+          "xp": 166,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3555,
+          "attack": 1047,
+          "wave": 9
+        },
+        {
+          "level": 39,
+          "minute": 24.86,
+          "gold": 8000,
+          "region": 8,
+          "deaths": 1,
+          "xp": 10,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3637,
+          "attack": 1405,
+          "wave": 10
+        },
+        {
+          "level": 40,
+          "minute": 25.97,
+          "gold": 5522,
+          "region": 7,
+          "deaths": 1,
+          "xp": 4226,
+          "weapon": 16,
+          "armor": 16,
+          "hp": 3943,
+          "attack": 1525,
+          "wave": 10
+        },
+        {
+          "level": 41,
+          "minute": 26.95,
+          "gold": 8565,
+          "region": 8,
+          "deaths": 1,
+          "xp": 2179,
+          "weapon": 17,
+          "armor": 16,
+          "hp": 4030,
+          "attack": 1225,
+          "wave": 10
+        },
+        {
+          "level": 42,
+          "minute": 28.08,
+          "gold": 4202,
+          "region": 8,
+          "deaths": 1,
+          "xp": 273,
+          "weapon": 17,
+          "armor": 17,
+          "hp": 4234,
+          "attack": 1641,
+          "wave": 11
+        },
+        {
+          "level": 43,
+          "minute": 29.13,
+          "gold": 6255,
+          "region": 8,
+          "deaths": 1,
+          "xp": 316,
+          "weapon": 17,
+          "armor": 17,
+          "hp": 4324,
+          "attack": 1677,
+          "wave": 11
+        },
+        {
+          "level": 44,
+          "minute": 30.49,
+          "gold": 2461,
+          "region": -1,
+          "deaths": 2,
+          "xp": 122,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 4694,
+          "attack": 1573,
+          "wave": 11
+        },
+        {
+          "level": 45,
+          "minute": 31.73,
+          "gold": 1609,
+          "region": 8,
+          "deaths": 2,
+          "xp": 16,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 4933,
+          "attack": 2145,
+          "wave": 12
+        },
+        {
+          "level": 46,
+          "minute": 32.92,
+          "gold": 4790,
+          "region": 9,
+          "deaths": 2,
+          "xp": 50,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5177,
+          "attack": 1702,
+          "wave": 12
+        },
+        {
+          "level": 47,
+          "minute": 34.46,
+          "gold": 8220,
+          "region": 9,
+          "deaths": 3,
+          "xp": 4945,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5427,
+          "attack": 2296,
+          "wave": 13
+        },
+        {
+          "level": 48,
+          "minute": 35.59,
+          "gold": 4499,
+          "region": 9,
+          "deaths": 3,
+          "xp": 189,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5531,
+          "attack": 1804,
+          "wave": 13
+        },
+        {
+          "level": 49,
+          "minute": 37.13,
+          "gold": 3779,
+          "region": 10,
+          "deaths": 3,
+          "xp": 193,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5790,
+          "attack": 2471,
+          "wave": 14
+        },
+        {
+          "level": 50,
+          "minute": 38.29,
+          "gold": 3564,
+          "region": 9,
+          "deaths": 3,
+          "xp": 565,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5896,
+          "attack": 2563,
+          "wave": 14
+        },
+        {
+          "level": 51,
+          "minute": 39.57,
+          "gold": 6180,
+          "region": 10,
+          "deaths": 3,
+          "xp": 271,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6142,
+          "attack": 1966,
+          "wave": 14
+        },
+        {
+          "level": 52,
+          "minute": 41.49,
+          "gold": 6494,
+          "region": 10,
+          "deaths": 4,
+          "xp": 237,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6251,
+          "attack": 2659,
+          "wave": 15
+        },
+        {
+          "level": 53,
+          "minute": 43.38,
+          "gold": 6391,
+          "region": 10,
+          "deaths": 5,
+          "xp": 267,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6360,
+          "attack": 2038,
+          "wave": 15
+        },
+        {
+          "level": 54,
+          "minute": 44.85,
+          "gold": 7964,
+          "region": 10,
+          "deaths": 5,
+          "xp": 406,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6638,
+          "attack": 2799,
+          "wave": 16
+        },
+        {
+          "level": 55,
+          "minute": 46.17,
+          "gold": 12616,
+          "region": 10,
+          "deaths": 5,
+          "xp": 0,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6750,
+          "attack": 2897,
+          "wave": 16
+        }
+      ],
+      "visits": [
+        {
+          "region": 0,
+          "level": 5,
+          "minute": 2.06,
+          "seconds": 62.2,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.29,
+          "bossSpawnTime": 126.34999999999496,
+          "bossFightSeconds": 32.3
+        },
+        {
+          "region": 1,
+          "level": 8,
+          "minute": 3.32,
+          "seconds": 52.8,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.3,
+          "bossSpawnTime": 184.80000000000777,
+          "bossFightSeconds": 23.4
+        },
+        {
+          "region": 2,
+          "level": 11,
+          "minute": 4.42,
+          "seconds": 54.1,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.33,
+          "bossSpawnTime": 241.40000000002064,
+          "bossFightSeconds": 26.6
+        },
+        {
+          "region": 3,
+          "level": 14,
+          "minute": 5.97,
+          "seconds": 53.4,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.39,
+          "bossSpawnTime": 314.8500000000373,
+          "bossFightSeconds": 28.9
+        },
+        {
+          "region": 3,
+          "level": 16,
+          "minute": 7.08,
+          "seconds": 40.3,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.32,
+          "bossSpawnTime": 368.5500000000495,
+          "bossFightSeconds": 16.3
+        },
+        {
+          "region": 4,
+          "level": 18,
+          "minute": 7.96,
+          "seconds": 39.2,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.39,
+          "bossSpawnTime": 406.85000000005823,
+          "bossFightSeconds": 17.8
+        },
+        {
+          "region": 4,
+          "level": 20,
+          "minute": 9.29,
+          "seconds": 42.7,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.33,
+          "bossSpawnTime": 469.40000000007245,
+          "bossFightSeconds": 19.8
+        },
+        {
+          "region": 4,
+          "level": 21,
+          "minute": 10.23,
+          "seconds": 40.1,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.29,
+          "bossSpawnTime": 519.2000000000755,
+          "bossFightSeconds": 13.4
+        },
+        {
+          "region": 5,
+          "level": 23,
+          "minute": 11.09,
+          "seconds": 45.3,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.43,
+          "bossSpawnTime": 558.25000000004,
+          "bossFightSeconds": 19.6
+        },
+        {
+          "region": 5,
+          "level": 25,
+          "minute": 12.73,
+          "seconds": 36.8,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.37,
+          "bossSpawnTime": 639.7499999999659,
+          "bossFightSeconds": 11.1
+        },
+        {
+          "region": 5,
+          "level": 26,
+          "minute": 13.55,
+          "seconds": 38.3,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.34,
+          "bossSpawnTime": 676.7499999999322,
+          "bossFightSeconds": 12.5
+        },
+        {
+          "region": 5,
+          "level": 27,
+          "minute": 14.39,
+          "seconds": 34.3,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.32,
+          "bossSpawnTime": 712.7499999998995,
+          "bossFightSeconds": 10.8
+        },
+        {
+          "region": 6,
+          "level": 29,
+          "minute": 15.65,
+          "seconds": 39.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.44,
+          "bossSpawnTime": 776.4499999998416,
+          "bossFightSeconds": 11.4
+        },
+        {
+          "region": 6,
+          "level": 30,
+          "minute": 16.51,
+          "seconds": 34.9,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.42,
+          "bossSpawnTime": 811.2999999998099,
+          "bossFightSeconds": 11.4
+        },
+        {
+          "region": 6,
+          "level": 31,
+          "minute": 17.32,
+          "seconds": 40.9,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.47,
+          "bossSpawnTime": 849.1999999997754,
+          "bossFightSeconds": 15.6
+        },
+        {
+          "region": 6,
+          "level": 32,
+          "minute": 18.67,
+          "seconds": 31.9,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.39,
+          "bossSpawnTime": 909.2999999997207,
+          "bossFightSeconds": 10.9
+        },
+        {
+          "region": 7,
+          "level": 33,
+          "minute": 19.4,
+          "seconds": 34.9,
+          "result": "death",
+          "prepared": true,
+          "bossBurstFraction": 0.6,
+          "bossSpawnTime": 942.3999999996906
+        },
+        {
+          "region": 6,
+          "level": 34,
+          "minute": 20.19,
+          "seconds": 34.7,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.42,
+          "bossSpawnTime": 978.1999999996581,
+          "bossFightSeconds": 11.7
+        },
+        {
+          "region": 7,
+          "level": 35,
+          "minute": 21.59,
+          "seconds": 31,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.55,
+          "bossSpawnTime": 1041.6999999996003,
+          "bossFightSeconds": 11.7
+        },
+        {
+          "region": 7,
+          "level": 36,
+          "minute": 22.31,
+          "seconds": 33,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.54,
+          "bossSpawnTime": 1074.1499999995708,
+          "bossFightSeconds": 12.3
+        },
+        {
+          "region": 7,
+          "level": 37,
+          "minute": 23.06,
+          "seconds": 42.3,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.6,
+          "bossSpawnTime": 1112.5999999995358,
+          "bossFightSeconds": 16.2
+        },
+        {
+          "region": 8,
+          "level": 38,
+          "minute": 24.47,
+          "seconds": 42.7,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.82,
+          "bossSpawnTime": 1177.9499999994764,
+          "bossFightSeconds": 19.1
+        },
+        {
+          "region": 7,
+          "level": 39,
+          "minute": 25.39,
+          "seconds": 34.8,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.48,
+          "bossSpawnTime": 1222.9499999994355,
+          "bossFightSeconds": 9.1
+        },
+        {
+          "region": 8,
+          "level": 40,
+          "minute": 26.17,
+          "seconds": 46.8,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.84,
+          "bossSpawnTime": 1255.8499999994056,
+          "bossFightSeconds": 23
+        },
+        {
+          "region": 8,
+          "level": 41,
+          "minute": 27.69,
+          "seconds": 41.9,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.7,
+          "bossSpawnTime": 1332.0499999993363,
+          "bossFightSeconds": 16.3
+        },
+        {
+          "region": 8,
+          "level": 42,
+          "minute": 28.64,
+          "seconds": 30.7,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.69,
+          "bossSpawnTime": 1371.3499999993005,
+          "bossFightSeconds": 10.8
+        },
+        {
+          "region": 9,
+          "level": 43,
+          "minute": 29.35,
+          "seconds": 39,
+          "result": "death",
+          "prepared": false,
+          "bossBurstFraction": 1.22,
+          "bossSpawnTime": 1412.8499999992628
+        },
+        {
+          "region": 8,
+          "level": 44,
+          "minute": 30.9,
+          "seconds": 33.7,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.6,
+          "bossSpawnTime": 1478.449999999203,
+          "bossFightSeconds": 13
+        },
+        {
+          "region": 8,
+          "level": 44,
+          "minute": 31.66,
+          "seconds": 32.8,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.6,
+          "bossSpawnTime": 1514.3499999991704,
+          "bossFightSeconds": 9.9
+        },
+        {
+          "region": 9,
+          "level": 45,
+          "minute": 32.4,
+          "seconds": 40.4,
+          "result": "death",
+          "prepared": false,
+          "bossBurstFraction": 1.04,
+          "bossSpawnTime": 1547.5499999991403
+        },
+        {
+          "region": 9,
+          "level": 46,
+          "minute": 33.82,
+          "seconds": 38.7,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.87,
+          "bossSpawnTime": 1616.5499999990775,
+          "bossFightSeconds": 14.2
+        },
+        {
+          "region": 9,
+          "level": 47,
+          "minute": 34.66,
+          "seconds": 36.5,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.85,
+          "bossSpawnTime": 1651.3999999990458,
+          "bossFightSeconds": 15.9
+        },
+        {
+          "region": 9,
+          "level": 47,
+          "minute": 35.47,
+          "seconds": 47.4,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.97,
+          "bossSpawnTime": 1693.8999999990072,
+          "bossFightSeconds": 20.9
+        },
+        {
+          "region": 10,
+          "level": 48,
+          "minute": 36.98,
+          "seconds": 59.4,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 1.29,
+          "bossSpawnTime": 1767.69999999894,
+          "bossFightSeconds": 32.7
+        },
+        {
+          "region": 9,
+          "level": 49,
+          "minute": 38.21,
+          "seconds": 39.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.8,
+          "bossSpawnTime": 1829.4499999988839,
+          "bossFightSeconds": 12.7
+        },
+        {
+          "region": 10,
+          "level": 50,
+          "minute": 39.07,
+          "seconds": 55.7,
+          "result": "death",
+          "prepared": false,
+          "bossBurstFraction": 1.29,
+          "bossSpawnTime": 1871.4999999988456
+        },
+        {
+          "region": 10,
+          "level": 51,
+          "minute": 41.1,
+          "seconds": 42,
+          "result": "death",
+          "prepared": true,
+          "bossBurstFraction": 1.12,
+          "bossSpawnTime": 1970.2999999987558
+        },
+        {
+          "region": 9,
+          "level": 52,
+          "minute": 42,
+          "seconds": 34.4,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.69,
+          "bossSpawnTime": 2013.3999999987166,
+          "bossFightSeconds": 10
+        },
+        {
+          "region": 10,
+          "level": 52,
+          "minute": 42.77,
+          "seconds": 63.6,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 1.25,
+          "bossSpawnTime": 2049.5999999986907,
+          "bossFightSeconds": 37.4
+        },
+        {
+          "region": 10,
+          "level": 53,
+          "minute": 44.6,
+          "seconds": 43.2,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 1.05,
+          "bossSpawnTime": 2139.049999999016,
+          "bossFightSeconds": 20.1
+        },
+        {
+          "region": 10,
+          "level": 54,
+          "minute": 45.52,
+          "seconds": 38.8,
+          "result": "return",
+          "prepared": true,
+          "bossBurstFraction": 1.03,
+          "bossSpawnTime": 2181.4999999991705
+        }
+      ],
+      "minHp": 0.1678214439424388,
+      "garrisonDamageShare": 0.493,
+      "healing": 33301,
+      "damageTaken": 89013,
+      "snapshot": {
+        "endless": {
+          "bestWave": 0,
+          "bestDanger": 0,
+          "mastery": 0,
+          "shards": 0,
+          "rewards": {
+            "gold": 0,
+            "wood": 0,
+            "iron": 0,
+            "crystal": 0,
+            "shards": 0,
+            "rareDrops": 0
+          }
+        },
+        "version": 1,
+        "level": 55,
+        "xp": 0,
+        "gold": 12616,
+        "supplies": 0,
+        "materials": {
+          "wood": 1343,
+          "iron": 1318,
+          "crystal": 778
+        },
+        "equipment": {
+          "weapon": 18,
+          "armor": 18,
+          "charm": 18
+        },
+        "bases": [
+          {
+            "name": "緑風の野営地",
+            "upgrades": {
+              "attack": 18,
+              "speed": 12,
+              "range": 8,
+              "health": 17,
+              "move": 8,
+              "soldiers": 10,
+              "training": 14,
+              "wall": 15,
+              "tower": 8,
+              "cannon": 8,
+              "healer": 8,
+              "storage": 8,
+              "forge": 12,
+              "base": 0
+            },
+            "hp": 3500,
+            "wave": 16
+          }
+        ],
+        "activeBase": 0,
+        "discoveries": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "bosses": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "camps": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "visited": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "expeditionUnlocked": true,
+        "kills": 1318,
+        "elapsed": 2197.9499999992304,
+        "nextRaid": 2616.0499999989324,
+        "raidPending": false,
+        "raids": 0,
+        "raidTime": 75,
+        "skill": 8,
+        "settings": {
+          "particles": true,
+          "shake": true,
+          "sfxVolume": 0.55,
+          "sfxMuted": false
+        },
+        "completed": true
+      }
+    },
+    {
+      "style": "balanced",
+      "seed": 41,
+      "ability": "casual",
+      "omit": "base",
+      "level": 55,
+      "completed": true,
+      "minutes": 46.72,
+      "completeMinute": 37.32,
+      "level55Minute": 46.72,
+      "deaths": 4,
+      "losses": 0,
+      "waves": 16,
+      "expeditions": 41,
+      "baseMinutes": 8.17,
+      "expeditionMinutes": 29.02,
+      "gold": 7648,
+      "materials": {
+        "wood": 1220,
+        "iron": 1184,
+        "crystal": 844
+      },
+      "equipment": {
+        "weapon": 18,
+        "armor": 18,
+        "charm": 18
+      },
+      "upgrades": {
+        "attack": 18,
+        "speed": 12,
+        "range": 8,
+        "health": 17,
+        "move": 8,
+        "soldiers": 10,
+        "training": 15,
+        "wall": 15,
+        "tower": 8,
+        "cannon": 8,
+        "healer": 8,
+        "storage": 8,
+        "forge": 12,
+        "base": 0
+      },
+      "discoveries": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "bosses": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "purchases": [
+        {
+          "minute": 0.34,
+          "level": 2,
+          "item": "attack",
+          "rank": 1,
+          "gold": 45
+        },
+        {
+          "minute": 0.34,
+          "level": 2,
+          "item": "health",
+          "rank": 1,
+          "gold": 45
+        },
+        {
+          "minute": 0.34,
+          "level": 2,
+          "item": "speed",
+          "rank": 1,
+          "gold": 60
+        },
+        {
+          "minute": 0.72,
+          "level": 3,
+          "item": "weapon",
+          "rank": 1,
+          "gold": 85
+        },
+        {
+          "minute": 0.72,
+          "level": 3,
+          "item": "armor",
+          "rank": 1,
+          "gold": 85
+        },
+        {
+          "minute": 1.83,
+          "level": 5,
+          "item": "attack",
+          "rank": 2,
+          "gold": 61
+        },
+        {
+          "minute": 1.83,
+          "level": 5,
+          "item": "soldiers",
+          "rank": 1,
+          "gold": 85
+        },
+        {
+          "minute": 1.83,
+          "level": 5,
+          "item": "health",
+          "rank": 2,
+          "gold": 61
+        },
+        {
+          "minute": 1.83,
+          "level": 5,
+          "item": "wall",
+          "rank": 1,
+          "gold": 70
+        },
+        {
+          "minute": 1.83,
+          "level": 5,
+          "item": "training",
+          "rank": 1,
+          "gold": 80
+        },
+        {
+          "minute": 1.83,
+          "level": 5,
+          "item": "weapon",
+          "rank": 2,
+          "gold": 111
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "charm",
+          "rank": 1,
+          "gold": 85
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "skill",
+          "rank": 1,
+          "gold": 100
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "speed",
+          "rank": 2,
+          "gold": 84
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "storage",
+          "rank": 1,
+          "gold": 95
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "attack",
+          "rank": 3,
+          "gold": 82
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "range",
+          "rank": 1,
+          "gold": 65
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "move",
+          "rank": 1,
+          "gold": 65
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "armor",
+          "rank": 2,
+          "gold": 111
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "health",
+          "rank": 3,
+          "gold": 82
+        },
+        {
+          "minute": 3.09,
+          "level": 8,
+          "item": "weapon",
+          "rank": 3,
+          "gold": 144
+        },
+        {
+          "minute": 4.17,
+          "level": 10,
+          "item": "tower",
+          "rank": 1,
+          "gold": 130
+        },
+        {
+          "minute": 4.17,
+          "level": 10,
+          "item": "soldiers",
+          "rank": 2,
+          "gold": 115
+        },
+        {
+          "minute": 4.17,
+          "level": 10,
+          "item": "speed",
+          "rank": 3,
+          "gold": 118
+        },
+        {
+          "minute": 4.17,
+          "level": 10,
+          "item": "attack",
+          "rank": 4,
+          "gold": 111
+        },
+        {
+          "minute": 4.17,
+          "level": 10,
+          "item": "wall",
+          "rank": 2,
+          "gold": 95
+        },
+        {
+          "minute": 4.17,
+          "level": 10,
+          "item": "training",
+          "rank": 2,
+          "gold": 109
+        },
+        {
+          "minute": 4.17,
+          "level": 10,
+          "item": "armor",
+          "rank": 3,
+          "gold": 144
+        },
+        {
+          "minute": 4.17,
+          "level": 10,
+          "item": "health",
+          "rank": 4,
+          "gold": 111
+        },
+        {
+          "minute": 4.17,
+          "level": 10,
+          "item": "storage",
+          "rank": 2,
+          "gold": 133
+        },
+        {
+          "minute": 4.17,
+          "level": 10,
+          "item": "range",
+          "rank": 2,
+          "gold": 94
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "healer",
+          "rank": 1,
+          "gold": 110
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "weapon",
+          "rank": 4,
+          "gold": 187
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "attack",
+          "rank": 5,
+          "gold": 149
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "tower",
+          "rank": 2,
+          "gold": 189
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "move",
+          "rank": 2,
+          "gold": 98
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "speed",
+          "rank": 4,
+          "gold": 165
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "soldiers",
+          "rank": 3,
+          "gold": 155
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "wall",
+          "rank": 3,
+          "gold": 128
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "armor",
+          "rank": 4,
+          "gold": 187
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "training",
+          "rank": 3,
+          "gold": 148
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "health",
+          "rank": 5,
+          "gold": 149
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "healer",
+          "rank": 2,
+          "gold": 154
+        },
+        {
+          "minute": 5.4,
+          "level": 13,
+          "item": "attack",
+          "rank": 6,
+          "gold": 202
+        },
+        {
+          "minute": 5.85,
+          "level": 14,
+          "item": "storage",
+          "rank": 3,
+          "gold": 186
+        },
+        {
+          "minute": 5.85,
+          "level": 14,
+          "item": "speed",
+          "rank": 5,
+          "gold": 230
+        },
+        {
+          "minute": 5.85,
+          "level": 14,
+          "item": "soldiers",
+          "rank": 4,
+          "gold": 209
+        },
+        {
+          "minute": 5.85,
+          "level": 14,
+          "item": "range",
+          "rank": 3,
+          "gold": 137
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "forge",
+          "rank": 1,
+          "gold": 150
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "forge",
+          "rank": 2,
+          "gold": 210
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "weapon",
+          "rank": 5,
+          "gold": 226
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "armor",
+          "rank": 5,
+          "gold": 226
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "charm",
+          "rank": 4,
+          "gold": 174
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "weapon",
+          "rank": 6,
+          "gold": 294
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "wall",
+          "rank": 4,
+          "gold": 172
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "tower",
+          "rank": 3,
+          "gold": 273
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "health",
+          "rank": 6,
+          "gold": 202
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "move",
+          "rank": 3,
+          "gold": 146
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "training",
+          "rank": 4,
+          "gold": 201
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "forge",
+          "rank": 3,
+          "gold": 294
+        },
+        {
+          "minute": 7.1,
+          "level": 16,
+          "item": "attack",
+          "rank": 7,
+          "gold": 272
+        },
+        {
+          "minute": 8.08,
+          "level": 18,
+          "item": "skill",
+          "rank": 2,
+          "gold": 400
+        },
+        {
+          "minute": 8.08,
+          "level": 18,
+          "item": "armor",
+          "rank": 6,
+          "gold": 282
+        },
+        {
+          "minute": 8.08,
+          "level": 18,
+          "item": "weapon",
+          "rank": 7,
+          "gold": 367
+        },
+        {
+          "minute": 8.08,
+          "level": 18,
+          "item": "healer",
+          "rank": 3,
+          "gold": 216
+        },
+        {
+          "minute": 8.08,
+          "level": 18,
+          "item": "storage",
+          "rank": 4,
+          "gold": 261
+        },
+        {
+          "minute": 8.08,
+          "level": 18,
+          "item": "speed",
+          "rank": 6,
+          "gold": 323
+        },
+        {
+          "minute": 8.08,
+          "level": 18,
+          "item": "soldiers",
+          "rank": 5,
+          "gold": 282
+        },
+        {
+          "minute": 8.08,
+          "level": 18,
+          "item": "health",
+          "rank": 7,
+          "gold": 272
+        },
+        {
+          "minute": 8.97,
+          "level": 20,
+          "item": "wall",
+          "rank": 5,
+          "gold": 233
+        },
+        {
+          "minute": 8.97,
+          "level": 20,
+          "item": "training",
+          "rank": 5,
+          "gold": 274
+        },
+        {
+          "minute": 8.97,
+          "level": 20,
+          "item": "range",
+          "rank": 4,
+          "gold": 198
+        },
+        {
+          "minute": 8.97,
+          "level": 20,
+          "item": "tower",
+          "rank": 4,
+          "gold": 396
+        },
+        {
+          "minute": 8.97,
+          "level": 20,
+          "item": "attack",
+          "rank": 8,
+          "gold": 368
+        },
+        {
+          "minute": 8.97,
+          "level": 20,
+          "item": "armor",
+          "rank": 7,
+          "gold": 367
+        },
+        {
+          "minute": 8.97,
+          "level": 20,
+          "item": "forge",
+          "rank": 4,
+          "gold": 412
+        },
+        {
+          "minute": 8.97,
+          "level": 20,
+          "item": "weapon",
+          "rank": 8,
+          "gold": 459
+        },
+        {
+          "minute": 8.97,
+          "level": 20,
+          "item": "move",
+          "rank": 4,
+          "gold": 219
+        },
+        {
+          "minute": 9.42,
+          "level": 20,
+          "item": "speed",
+          "rank": 7,
+          "gold": 452
+        },
+        {
+          "minute": 9.42,
+          "level": 20,
+          "item": "health",
+          "rank": 8,
+          "gold": 368
+        },
+        {
+          "minute": 9.42,
+          "level": 20,
+          "item": "healer",
+          "rank": 4,
+          "gold": 302
+        },
+        {
+          "minute": 10.24,
+          "level": 21,
+          "item": "wall",
+          "rank": 6,
+          "gold": 314
+        },
+        {
+          "minute": 10.24,
+          "level": 21,
+          "item": "weapon",
+          "rank": 9,
+          "gold": 596
+        },
+        {
+          "minute": 10.24,
+          "level": 21,
+          "item": "armor",
+          "rank": 8,
+          "gold": 459
+        },
+        {
+          "minute": 10.24,
+          "level": 21,
+          "item": "training",
+          "rank": 6,
+          "gold": 372
+        },
+        {
+          "minute": 10.24,
+          "level": 21,
+          "item": "attack",
+          "rank": 9,
+          "gold": 496
+        },
+        {
+          "minute": 10.24,
+          "level": 21,
+          "item": "tower",
+          "rank": 5,
+          "gold": 575
+        },
+        {
+          "minute": 11.05,
+          "level": 23,
+          "item": "soldiers",
+          "rank": 6,
+          "gold": 381
+        },
+        {
+          "minute": 11.05,
+          "level": 23,
+          "item": "forge",
+          "rank": 5,
+          "gold": 576
+        },
+        {
+          "minute": 11.05,
+          "level": 23,
+          "item": "skill",
+          "rank": 3,
+          "gold": 900
+        },
+        {
+          "minute": 11.05,
+          "level": 23,
+          "item": "health",
+          "rank": 9,
+          "gold": 496
+        },
+        {
+          "minute": 11.05,
+          "level": 23,
+          "item": "armor",
+          "rank": 9,
+          "gold": 572
+        },
+        {
+          "minute": 12,
+          "level": 24,
+          "item": "weapon",
+          "rank": 10,
+          "gold": 744
+        },
+        {
+          "minute": 12,
+          "level": 24,
+          "item": "speed",
+          "rank": 8,
+          "gold": 632
+        },
+        {
+          "minute": 12,
+          "level": 24,
+          "item": "wall",
+          "rank": 7,
+          "gold": 424
+        },
+        {
+          "minute": 12,
+          "level": 24,
+          "item": "charm",
+          "rank": 8,
+          "gold": 440
+        },
+        {
+          "minute": 12,
+          "level": 24,
+          "item": "attack",
+          "rank": 10,
+          "gold": 670
+        },
+        {
+          "minute": 12,
+          "level": 24,
+          "item": "training",
+          "rank": 7,
+          "gold": 506
+        },
+        {
+          "minute": 12.56,
+          "level": 25,
+          "item": "storage",
+          "rank": 5,
+          "gold": 365
+        },
+        {
+          "minute": 12.56,
+          "level": 25,
+          "item": "range",
+          "rank": 5,
+          "gold": 287
+        },
+        {
+          "minute": 12.56,
+          "level": 25,
+          "item": "move",
+          "rank": 5,
+          "gold": 329
+        },
+        {
+          "minute": 12.56,
+          "level": 25,
+          "item": "healer",
+          "rank": 5,
+          "gold": 423
+        },
+        {
+          "minute": 12.56,
+          "level": 25,
+          "item": "armor",
+          "rank": 10,
+          "gold": 744
+        },
+        {
+          "minute": 13.54,
+          "level": 26,
+          "item": "weapon",
+          "rank": 11,
+          "gold": 967
+        },
+        {
+          "minute": 13.54,
+          "level": 26,
+          "item": "forge",
+          "rank": 6,
+          "gold": 807
+        },
+        {
+          "minute": 13.54,
+          "level": 26,
+          "item": "health",
+          "rank": 10,
+          "gold": 670
+        },
+        {
+          "minute": 13.54,
+          "level": 26,
+          "item": "tower",
+          "rank": 6,
+          "gold": 833
+        },
+        {
+          "minute": 13.54,
+          "level": 26,
+          "item": "charm",
+          "rank": 9,
+          "gold": 548
+        },
+        {
+          "minute": 14.42,
+          "level": 27,
+          "item": "speed",
+          "rank": 9,
+          "gold": 885
+        },
+        {
+          "minute": 14.42,
+          "level": 27,
+          "item": "wall",
+          "rank": 8,
+          "gold": 572
+        },
+        {
+          "minute": 14.42,
+          "level": 27,
+          "item": "training",
+          "rank": 8,
+          "gold": 688
+        },
+        {
+          "minute": 14.42,
+          "level": 27,
+          "item": "weapon",
+          "rank": 12,
+          "gold": 1203
+        },
+        {
+          "minute": 14.42,
+          "level": 27,
+          "item": "charm",
+          "rank": 10,
+          "gold": 712
+        },
+        {
+          "minute": 15.16,
+          "level": 28,
+          "item": "armor",
+          "rank": 11,
+          "gold": 926
+        },
+        {
+          "minute": 15.16,
+          "level": 28,
+          "item": "forge",
+          "rank": 7,
+          "gold": 1129
+        },
+        {
+          "minute": 15.16,
+          "level": 28,
+          "item": "wall",
+          "rank": 9,
+          "gold": 772
+        },
+        {
+          "minute": 15.16,
+          "level": 28,
+          "item": "training",
+          "rank": 9,
+          "gold": 936
+        },
+        {
+          "minute": 15.67,
+          "level": 29,
+          "item": "speed",
+          "rank": 10,
+          "gold": 1240
+        },
+        {
+          "minute": 16.49,
+          "level": 30,
+          "item": "cannon",
+          "rank": 1,
+          "gold": 280
+        },
+        {
+          "minute": 16.49,
+          "level": 30,
+          "item": "cannon",
+          "rank": 2,
+          "gold": 420
+        },
+        {
+          "minute": 16.49,
+          "level": 30,
+          "item": "cannon",
+          "rank": 3,
+          "gold": 630
+        },
+        {
+          "minute": 16.49,
+          "level": 30,
+          "item": "cannon",
+          "rank": 4,
+          "gold": 945
+        },
+        {
+          "minute": 16.49,
+          "level": 30,
+          "item": "skill",
+          "rank": 4,
+          "gold": 1600
+        },
+        {
+          "minute": 16.49,
+          "level": 30,
+          "item": "cannon",
+          "rank": 5,
+          "gold": 1418
+        },
+        {
+          "minute": 17.29,
+          "level": 31,
+          "item": "tower",
+          "rank": 7,
+          "gold": 1208
+        },
+        {
+          "minute": 17.29,
+          "level": 31,
+          "item": "weapon",
+          "rank": 13,
+          "gold": 1495
+        },
+        {
+          "minute": 17.29,
+          "level": 31,
+          "item": "armor",
+          "rank": 12,
+          "gold": 1150
+        },
+        {
+          "minute": 18.21,
+          "level": 32,
+          "item": "charm",
+          "rank": 11,
+          "gold": 885
+        },
+        {
+          "minute": 18.21,
+          "level": 32,
+          "item": "weapon",
+          "rank": 14,
+          "gold": 1944
+        },
+        {
+          "minute": 18.21,
+          "level": 32,
+          "item": "wall",
+          "rank": 10,
+          "gold": 1043
+        },
+        {
+          "minute": 18.21,
+          "level": 32,
+          "item": "training",
+          "rank": 10,
+          "gold": 1273
+        },
+        {
+          "minute": 18.72,
+          "level": 32,
+          "item": "armor",
+          "rank": 13,
+          "gold": 1495
+        },
+        {
+          "minute": 19.48,
+          "level": 33,
+          "item": "storage",
+          "rank": 6,
+          "gold": 511
+        },
+        {
+          "minute": 19.48,
+          "level": 33,
+          "item": "range",
+          "rank": 6,
+          "gold": 417
+        },
+        {
+          "minute": 19.48,
+          "level": 33,
+          "item": "move",
+          "rank": 6,
+          "gold": 494
+        },
+        {
+          "minute": 19.48,
+          "level": 33,
+          "item": "healer",
+          "rank": 6,
+          "gold": 592
+        },
+        {
+          "minute": 19.48,
+          "level": 33,
+          "item": "forge",
+          "rank": 8,
+          "gold": 1581
+        },
+        {
+          "minute": 19.48,
+          "level": 33,
+          "item": "charm",
+          "rank": 12,
+          "gold": 1097
+        },
+        {
+          "minute": 20.45,
+          "level": 34,
+          "item": "soldiers",
+          "rank": 7,
+          "gold": 515
+        },
+        {
+          "minute": 20.45,
+          "level": 34,
+          "item": "cannon",
+          "rank": 6,
+          "gold": 2126
+        },
+        {
+          "minute": 20.45,
+          "level": 34,
+          "item": "skill",
+          "rank": 5,
+          "gold": 2500
+        },
+        {
+          "minute": 21.2,
+          "level": 35,
+          "item": "armor",
+          "rank": 14,
+          "gold": 1854
+        },
+        {
+          "minute": 21.2,
+          "level": 35,
+          "item": "charm",
+          "rank": 13,
+          "gold": 1426
+        },
+        {
+          "minute": 21.83,
+          "level": 35,
+          "item": "forge",
+          "rank": 9,
+          "gold": 2214
+        },
+        {
+          "minute": 21.83,
+          "level": 35,
+          "item": "charm",
+          "rank": 14,
+          "gold": 1763
+        },
+        {
+          "minute": 22.74,
+          "level": 36,
+          "item": "soldiers",
+          "rank": 8,
+          "gold": 695
+        },
+        {
+          "minute": 22.74,
+          "level": 36,
+          "item": "tower",
+          "rank": 8,
+          "gold": 1752
+        },
+        {
+          "minute": 22.74,
+          "level": 36,
+          "item": "cannon",
+          "rank": 7,
+          "gold": 3189
+        },
+        {
+          "minute": 23.48,
+          "level": 37,
+          "item": "skill",
+          "rank": 6,
+          "gold": 3600
+        },
+        {
+          "minute": 24.5,
+          "level": 38,
+          "item": "forge",
+          "rank": 10,
+          "gold": 3099
+        },
+        {
+          "minute": 25.05,
+          "level": 38,
+          "item": "skill",
+          "rank": 7,
+          "gold": 4900
+        },
+        {
+          "minute": 26.15,
+          "level": 39,
+          "item": "weapon",
+          "rank": 15,
+          "gold": 2175
+        },
+        {
+          "minute": 26.15,
+          "level": 39,
+          "item": "weapon",
+          "rank": 16,
+          "gold": 2828
+        },
+        {
+          "minute": 26.15,
+          "level": 39,
+          "item": "armor",
+          "rank": 15,
+          "gold": 2175
+        },
+        {
+          "minute": 27.1,
+          "level": 40,
+          "item": "weapon",
+          "rank": 17,
+          "gold": 3676
+        },
+        {
+          "minute": 28.11,
+          "level": 41,
+          "item": "storage",
+          "rank": 7,
+          "gold": 715
+        },
+        {
+          "minute": 28.11,
+          "level": 41,
+          "item": "range",
+          "rank": 7,
+          "gold": 604
+        },
+        {
+          "minute": 28.11,
+          "level": 41,
+          "item": "healer",
+          "rank": 7,
+          "gold": 828
+        },
+        {
+          "minute": 28.11,
+          "level": 41,
+          "item": "move",
+          "rank": 7,
+          "gold": 740
+        },
+        {
+          "minute": 28.11,
+          "level": 41,
+          "item": "armor",
+          "rank": 16,
+          "gold": 2828
+        },
+        {
+          "minute": 28.11,
+          "level": 41,
+          "item": "charm",
+          "rank": 15,
+          "gold": 2175
+        },
+        {
+          "minute": 28.64,
+          "level": 41,
+          "item": "armor",
+          "rank": 17,
+          "gold": 3676
+        },
+        {
+          "minute": 29.48,
+          "level": 42,
+          "item": "weapon",
+          "rank": 18,
+          "gold": 4779
+        },
+        {
+          "minute": 30.27,
+          "level": 43,
+          "item": "soldiers",
+          "rank": 9,
+          "gold": 938
+        },
+        {
+          "minute": 30.27,
+          "level": 43,
+          "item": "cannon",
+          "rank": 8,
+          "gold": 4784
+        },
+        {
+          "minute": 30.27,
+          "level": 43,
+          "item": "charm",
+          "rank": 16,
+          "gold": 2828
+        },
+        {
+          "minute": 31.31,
+          "level": 44,
+          "item": "attack",
+          "rank": 11,
+          "gold": 905
+        },
+        {
+          "minute": 31.31,
+          "level": 44,
+          "item": "health",
+          "rank": 11,
+          "gold": 905
+        },
+        {
+          "minute": 31.31,
+          "level": 44,
+          "item": "attack",
+          "rank": 12,
+          "gold": 1221
+        },
+        {
+          "minute": 31.31,
+          "level": 44,
+          "item": "health",
+          "rank": 12,
+          "gold": 1221
+        },
+        {
+          "minute": 31.31,
+          "level": 44,
+          "item": "attack",
+          "rank": 13,
+          "gold": 1649
+        },
+        {
+          "minute": 31.99,
+          "level": 44,
+          "item": "speed",
+          "rank": 11,
+          "gold": 1736
+        },
+        {
+          "minute": 31.99,
+          "level": 44,
+          "item": "health",
+          "rank": 13,
+          "gold": 1649
+        },
+        {
+          "minute": 31.99,
+          "level": 44,
+          "item": "attack",
+          "rank": 14,
+          "gold": 2226
+        },
+        {
+          "minute": 32.83,
+          "level": 45,
+          "item": "wall",
+          "rank": 11,
+          "gold": 1407
+        },
+        {
+          "minute": 32.83,
+          "level": 45,
+          "item": "speed",
+          "rank": 12,
+          "gold": 2430
+        },
+        {
+          "minute": 32.83,
+          "level": 45,
+          "item": "training",
+          "rank": 11,
+          "gold": 1732
+        },
+        {
+          "minute": 33.79,
+          "level": 46,
+          "item": "health",
+          "rank": 14,
+          "gold": 2226
+        },
+        {
+          "minute": 33.79,
+          "level": 46,
+          "item": "attack",
+          "rank": 15,
+          "gold": 3005
+        },
+        {
+          "minute": 33.79,
+          "level": 46,
+          "item": "wall",
+          "rank": 12,
+          "gold": 1900
+        },
+        {
+          "minute": 34.78,
+          "level": 47,
+          "item": "training",
+          "rank": 12,
+          "gold": 2355
+        },
+        {
+          "minute": 34.78,
+          "level": 47,
+          "item": "health",
+          "rank": 15,
+          "gold": 3005
+        },
+        {
+          "minute": 35.34,
+          "level": 47,
+          "item": "attack",
+          "rank": 16,
+          "gold": 4057
+        },
+        {
+          "minute": 35.34,
+          "level": 47,
+          "item": "wall",
+          "rank": 13,
+          "gold": 2565
+        },
+        {
+          "minute": 36.39,
+          "level": 48,
+          "item": "training",
+          "rank": 13,
+          "gold": 3203
+        },
+        {
+          "minute": 36.39,
+          "level": 48,
+          "item": "forge",
+          "rank": 11,
+          "gold": 4339
+        },
+        {
+          "minute": 37.32,
+          "level": 49,
+          "item": "storage",
+          "rank": 8,
+          "gold": 1001
+        },
+        {
+          "minute": 37.32,
+          "level": 49,
+          "item": "range",
+          "rank": 8,
+          "gold": 876
+        },
+        {
+          "minute": 37.32,
+          "level": 49,
+          "item": "healer",
+          "rank": 8,
+          "gold": 1160
+        },
+        {
+          "minute": 37.32,
+          "level": 49,
+          "item": "move",
+          "rank": 8,
+          "gold": 1111
+        },
+        {
+          "minute": 37.32,
+          "level": 49,
+          "item": "health",
+          "rank": 16,
+          "gold": 4057
+        },
+        {
+          "minute": 38.2,
+          "level": 49,
+          "item": "wall",
+          "rank": 14,
+          "gold": 3463
+        },
+        {
+          "minute": 38.74,
+          "level": 49,
+          "item": "attack",
+          "rank": 17,
+          "gold": 5477
+        },
+        {
+          "minute": 39.48,
+          "level": 50,
+          "item": "soldiers",
+          "rank": 10,
+          "gold": 1266
+        },
+        {
+          "minute": 39.48,
+          "level": 50,
+          "item": "armor",
+          "rank": 18,
+          "gold": 4779
+        },
+        {
+          "minute": 40.25,
+          "level": 50,
+          "item": "charm",
+          "rank": 17,
+          "gold": 3676
+        },
+        {
+          "minute": 41.52,
+          "level": 51,
+          "item": "skill",
+          "rank": 8,
+          "gold": 6400
+        },
+        {
+          "minute": 42.2,
+          "level": 52,
+          "item": "training",
+          "rank": 14,
+          "gold": 4356
+        },
+        {
+          "minute": 42.98,
+          "level": 52,
+          "item": "health",
+          "rank": 17,
+          "gold": 5477
+        },
+        {
+          "minute": 42.98,
+          "level": 52,
+          "item": "wall",
+          "rank": 15,
+          "gold": 4675
+        },
+        {
+          "minute": 43.66,
+          "level": 53,
+          "item": "charm",
+          "rank": 18,
+          "gold": 4779
+        },
+        {
+          "minute": 44.84,
+          "level": 53,
+          "item": "forge",
+          "rank": 12,
+          "gold": 6074
+        },
+        {
+          "minute": 45.39,
+          "level": 54,
+          "item": "attack",
+          "rank": 18,
+          "gold": 7394
+        },
+        {
+          "minute": 46.32,
+          "level": 54,
+          "item": "training",
+          "rank": 15,
+          "gold": 5924
+        }
+      ],
+      "maxPurchaseGap": 1.27,
+      "milestones": [
+        {
+          "level": 1,
+          "minute": 0,
+          "gold": 35,
+          "region": -1,
+          "deaths": 0,
+          "xp": 0,
+          "weapon": 0,
+          "armor": 0,
+          "hp": 120,
+          "attack": 18,
+          "wave": 0
+        },
+        {
+          "level": 2,
+          "minute": 0.31,
+          "gold": 85,
+          "region": -1,
+          "deaths": 0,
+          "xp": 6,
+          "weapon": 0,
+          "armor": 0,
+          "hp": 139,
+          "attack": 22,
+          "wave": 0
+        },
+        {
+          "level": 3,
+          "minute": 0.72,
+          "gold": 205,
+          "region": -1,
+          "deaths": 0,
+          "xp": 13,
+          "weapon": 0,
+          "armor": 0,
+          "hp": 182,
+          "attack": 29,
+          "wave": 2
+        },
+        {
+          "level": 4,
+          "minute": 1.18,
+          "gold": 139,
+          "region": -1,
+          "deaths": 0,
+          "xp": 10,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 227,
+          "attack": 38,
+          "wave": 2
+        },
+        {
+          "level": 5,
+          "minute": 1.83,
+          "gold": 345,
+          "region": -1,
+          "deaths": 0,
+          "xp": 113,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 251,
+          "attack": 42,
+          "wave": 2
+        },
+        {
+          "level": 6,
+          "minute": 2.32,
+          "gold": 296,
+          "region": 0,
+          "deaths": 0,
+          "xp": 136,
+          "weapon": 2,
+          "armor": 1,
+          "hp": 307,
+          "attack": 72,
+          "wave": 3
+        },
+        {
+          "level": 7,
+          "minute": 2.48,
+          "gold": 425,
+          "region": 0,
+          "deaths": 0,
+          "xp": 0,
+          "weapon": 2,
+          "armor": 1,
+          "hp": 335,
+          "attack": 80,
+          "wave": 3
+        },
+        {
+          "level": 8,
+          "minute": 3.09,
+          "gold": 922,
+          "region": 0,
+          "deaths": 0,
+          "xp": 332,
+          "weapon": 2,
+          "armor": 1,
+          "hp": 362,
+          "attack": 87,
+          "wave": 3
+        },
+        {
+          "level": 9,
+          "minute": 3.55,
+          "gold": 407,
+          "region": 1,
+          "deaths": 0,
+          "xp": 75,
+          "weapon": 3,
+          "armor": 2,
+          "hp": 465,
+          "attack": 112,
+          "wave": 3
+        },
+        {
+          "level": 10,
+          "minute": 4.17,
+          "gold": 1235,
+          "region": 1,
+          "deaths": 0,
+          "xp": 1110,
+          "weapon": 3,
+          "armor": 2,
+          "hp": 498,
+          "attack": 121,
+          "wave": 3
+        },
+        {
+          "level": 11,
+          "minute": 4.54,
+          "gold": 241,
+          "region": 2,
+          "deaths": 0,
+          "xp": 305,
+          "weapon": 3,
+          "armor": 3,
+          "hp": 617,
+          "attack": 139,
+          "wave": 3
+        },
+        {
+          "level": 12,
+          "minute": 4.82,
+          "gold": 1075,
+          "region": 2,
+          "deaths": 0,
+          "xp": 2,
+          "weapon": 3,
+          "armor": 3,
+          "hp": 655,
+          "attack": 148,
+          "wave": 3
+        },
+        {
+          "level": 13,
+          "minute": 5.4,
+          "gold": 1619,
+          "region": 2,
+          "deaths": 0,
+          "xp": 79,
+          "weapon": 3,
+          "armor": 3,
+          "hp": 693,
+          "attack": 157,
+          "wave": 3
+        },
+        {
+          "level": 14,
+          "minute": 5.7,
+          "gold": 327,
+          "region": -1,
+          "deaths": 0,
+          "xp": 58,
+          "weapon": 4,
+          "armor": 4,
+          "hp": 833,
+          "attack": 159,
+          "wave": 3
+        },
+        {
+          "level": 15,
+          "minute": 6.37,
+          "gold": 1321,
+          "region": 3,
+          "deaths": 0,
+          "xp": 129,
+          "weapon": 4,
+          "armor": 4,
+          "hp": 876,
+          "attack": 213,
+          "wave": 4
+        },
+        {
+          "level": 16,
+          "minute": 6.96,
+          "gold": 2118,
+          "region": 3,
+          "deaths": 0,
+          "xp": 32,
+          "weapon": 4,
+          "armor": 4,
+          "hp": 919,
+          "attack": 224,
+          "wave": 4
+        },
+        {
+          "level": 17,
+          "minute": 7.5,
+          "gold": 824,
+          "region": 3,
+          "deaths": 0,
+          "xp": 383,
+          "weapon": 6,
+          "armor": 5,
+          "hp": 1081,
+          "attack": 345,
+          "wave": 4
+        },
+        {
+          "level": 18,
+          "minute": 8.08,
+          "gold": 2463,
+          "region": 3,
+          "deaths": 0,
+          "xp": 1705,
+          "weapon": 6,
+          "armor": 5,
+          "hp": 1130,
+          "attack": 361,
+          "wave": 4
+        },
+        {
+          "level": 19,
+          "minute": 8.5,
+          "gold": 1202,
+          "region": 4,
+          "deaths": 0,
+          "xp": 297,
+          "weapon": 7,
+          "armor": 6,
+          "hp": 1307,
+          "attack": 398,
+          "wave": 4
+        },
+        {
+          "level": 20,
+          "minute": 8.97,
+          "gold": 3043,
+          "region": 4,
+          "deaths": 0,
+          "xp": 736,
+          "weapon": 7,
+          "armor": 6,
+          "hp": 1361,
+          "attack": 416,
+          "wave": 4
+        },
+        {
+          "level": 21,
+          "minute": 9.86,
+          "gold": 1263,
+          "region": 4,
+          "deaths": 0,
+          "xp": 330,
+          "weapon": 8,
+          "armor": 7,
+          "hp": 1555,
+          "attack": 484,
+          "wave": 5
+        },
+        {
+          "level": 22,
+          "minute": 10.55,
+          "gold": 472,
+          "region": 4,
+          "deaths": 0,
+          "xp": 542,
+          "weapon": 9,
+          "armor": 8,
+          "hp": 1682,
+          "attack": 546,
+          "wave": 5
+        },
+        {
+          "level": 23,
+          "minute": 11.05,
+          "gold": 3045,
+          "region": 4,
+          "deaths": 0,
+          "xp": 787,
+          "weapon": 9,
+          "armor": 8,
+          "hp": 1743,
+          "attack": 567,
+          "wave": 5
+        },
+        {
+          "level": 24,
+          "minute": 11.87,
+          "gold": 2713,
+          "region": 5,
+          "deaths": 0,
+          "xp": 201,
+          "weapon": 9,
+          "armor": 9,
+          "hp": 1961,
+          "attack": 600,
+          "wave": 5
+        },
+        {
+          "level": 25,
+          "minute": 12.56,
+          "gold": 1923,
+          "region": -1,
+          "deaths": 0,
+          "xp": 939,
+          "weapon": 10,
+          "armor": 9,
+          "hp": 2028,
+          "attack": 518,
+          "wave": 5
+        },
+        {
+          "level": 26,
+          "minute": 13.46,
+          "gold": 3073,
+          "region": 5,
+          "deaths": 0,
+          "xp": 153,
+          "weapon": 10,
+          "armor": 10,
+          "hp": 2172,
+          "attack": 693,
+          "wave": 6
+        },
+        {
+          "level": 27,
+          "minute": 14.06,
+          "gold": 2411,
+          "region": 5,
+          "deaths": 0,
+          "xp": 474,
+          "weapon": 11,
+          "armor": 10,
+          "hp": 2333,
+          "attack": 757,
+          "wave": 6
+        },
+        {
+          "level": 28,
+          "minute": 14.85,
+          "gold": 1707,
+          "region": 5,
+          "deaths": 0,
+          "xp": 279,
+          "weapon": 12,
+          "armor": 10,
+          "hp": 2405,
+          "attack": 907,
+          "wave": 6
+        },
+        {
+          "level": 29,
+          "minute": 15.62,
+          "gold": 1170,
+          "region": -1,
+          "deaths": 0,
+          "xp": 73,
+          "weapon": 12,
+          "armor": 11,
+          "hp": 2562,
+          "attack": 734,
+          "wave": 6
+        },
+        {
+          "level": 30,
+          "minute": 16.49,
+          "gold": 5336,
+          "region": 6,
+          "deaths": 0,
+          "xp": 3256,
+          "weapon": 12,
+          "armor": 11,
+          "hp": 2637,
+          "attack": 986,
+          "wave": 7
+        },
+        {
+          "level": 31,
+          "minute": 17.24,
+          "gold": 3148,
+          "region": 6,
+          "deaths": 0,
+          "xp": 221,
+          "weapon": 12,
+          "armor": 11,
+          "hp": 2712,
+          "attack": 1015,
+          "wave": 7
+        },
+        {
+          "level": 32,
+          "minute": 18.1,
+          "gold": 4003,
+          "region": 6,
+          "deaths": 0,
+          "xp": 264,
+          "weapon": 13,
+          "armor": 12,
+          "hp": 2879,
+          "attack": 828,
+          "wave": 7
+        },
+        {
+          "level": 33,
+          "minute": 19.13,
+          "gold": 2478,
+          "region": 6,
+          "deaths": 0,
+          "xp": 485,
+          "weapon": 14,
+          "armor": 13,
+          "hp": 3050,
+          "attack": 1152,
+          "wave": 8
+        },
+        {
+          "level": 34,
+          "minute": 19.92,
+          "gold": 2403,
+          "region": 7,
+          "deaths": 0,
+          "xp": 42,
+          "weapon": 14,
+          "armor": 13,
+          "hp": 3130,
+          "attack": 1202,
+          "wave": 8
+        },
+        {
+          "level": 35,
+          "minute": 20.97,
+          "gold": 2670,
+          "region": 6,
+          "deaths": 0,
+          "xp": 52,
+          "weapon": 14,
+          "armor": 13,
+          "hp": 3210,
+          "attack": 942,
+          "wave": 8
+        },
+        {
+          "level": 36,
+          "minute": 22.18,
+          "gold": 1558,
+          "region": 7,
+          "deaths": 0,
+          "xp": 973,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3391,
+          "attack": 1286,
+          "wave": 9
+        },
+        {
+          "level": 37,
+          "minute": 23.12,
+          "gold": 1954,
+          "region": 7,
+          "deaths": 0,
+          "xp": 877,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3473,
+          "attack": 1318,
+          "wave": 9
+        },
+        {
+          "level": 38,
+          "minute": 24.5,
+          "gold": 4900,
+          "region": 7,
+          "deaths": 0,
+          "xp": 1096,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3555,
+          "attack": 1031,
+          "wave": 9
+        },
+        {
+          "level": 39,
+          "minute": 25.53,
+          "gold": 3944,
+          "region": 8,
+          "deaths": 0,
+          "xp": 1124,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3637,
+          "attack": 1405,
+          "wave": 10
+        },
+        {
+          "level": 40,
+          "minute": 26.66,
+          "gold": 2804,
+          "region": 7,
+          "deaths": 0,
+          "xp": 1190,
+          "weapon": 16,
+          "armor": 15,
+          "hp": 3831,
+          "attack": 1525,
+          "wave": 10
+        },
+        {
+          "level": 41,
+          "minute": 27.83,
+          "gold": 6317,
+          "region": 8,
+          "deaths": 0,
+          "xp": 837,
+          "weapon": 17,
+          "armor": 15,
+          "hp": 3916,
+          "attack": 1225,
+          "wave": 10
+        },
+        {
+          "level": 42,
+          "minute": 29.05,
+          "gold": 3150,
+          "region": 8,
+          "deaths": 0,
+          "xp": 978,
+          "weapon": 17,
+          "armor": 17,
+          "hp": 4234,
+          "attack": 1641,
+          "wave": 11
+        },
+        {
+          "level": 43,
+          "minute": 30,
+          "gold": 4964,
+          "region": 8,
+          "deaths": 0,
+          "xp": 428,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 4324,
+          "attack": 1902,
+          "wave": 11
+        },
+        {
+          "level": 44,
+          "minute": 31.28,
+          "gold": 4981,
+          "region": 9,
+          "deaths": 0,
+          "xp": 11,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 4413,
+          "attack": 1483,
+          "wave": 11
+        },
+        {
+          "level": 45,
+          "minute": 32.42,
+          "gold": 2656,
+          "region": 8,
+          "deaths": 0,
+          "xp": 485,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 4933,
+          "attack": 2145,
+          "wave": 12
+        },
+        {
+          "level": 46,
+          "minute": 33.7,
+          "gold": 5364,
+          "region": 9,
+          "deaths": 0,
+          "xp": 284,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5031,
+          "attack": 2199,
+          "wave": 12
+        },
+        {
+          "level": 47,
+          "minute": 34.78,
+          "gold": 7759,
+          "region": 9,
+          "deaths": 0,
+          "xp": 1501,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5278,
+          "attack": 1737,
+          "wave": 12
+        },
+        {
+          "level": 48,
+          "minute": 36.2,
+          "gold": 5121,
+          "region": 9,
+          "deaths": 0,
+          "xp": 142,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5531,
+          "attack": 2384,
+          "wave": 13
+        },
+        {
+          "level": 49,
+          "minute": 37.32,
+          "gold": 8247,
+          "region": 10,
+          "deaths": 0,
+          "xp": 5615,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5635,
+          "attack": 2471,
+          "wave": 13
+        },
+        {
+          "level": 50,
+          "minute": 38.99,
+          "gold": 727,
+          "region": 9,
+          "deaths": 1,
+          "xp": 435,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5896,
+          "attack": 2563,
+          "wave": 14
+        },
+        {
+          "level": 51,
+          "minute": 40.56,
+          "gold": 2473,
+          "region": 10,
+          "deaths": 2,
+          "xp": 1406,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6142,
+          "attack": 1966,
+          "wave": 14
+        },
+        {
+          "level": 52,
+          "minute": 42.2,
+          "gold": 7933,
+          "region": -1,
+          "deaths": 3,
+          "xp": 3937,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6251,
+          "attack": 2002,
+          "wave": 14
+        },
+        {
+          "level": 53,
+          "minute": 43.55,
+          "gold": 5533,
+          "region": 10,
+          "deaths": 3,
+          "xp": 242,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6526,
+          "attack": 2718,
+          "wave": 15
+        },
+        {
+          "level": 54,
+          "minute": 45.18,
+          "gold": 6912,
+          "region": -1,
+          "deaths": 4,
+          "xp": 78,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6638,
+          "attack": 2098,
+          "wave": 15
+        },
+        {
+          "level": 55,
+          "minute": 46.72,
+          "gold": 7648,
+          "region": 10,
+          "deaths": 4,
+          "xp": 0,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6750,
+          "attack": 2910,
+          "wave": 16
+        }
+      ],
+      "visits": [
+        {
+          "region": 0,
+          "level": 5,
+          "minute": 2.06,
+          "seconds": 61.9,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.29,
+          "bossSpawnTime": 121.64999999999523,
+          "bossFightSeconds": 36.6
+        },
+        {
+          "region": 1,
+          "level": 8,
+          "minute": 3.31,
+          "seconds": 51.5,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.3,
+          "bossSpawnTime": 183.90000000000757,
+          "bossFightSeconds": 27.2
+        },
+        {
+          "region": 2,
+          "level": 10,
+          "minute": 4.39,
+          "seconds": 60.9,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.36,
+          "bossSpawnTime": 242.20000000002082,
+          "bossFightSeconds": 30.9
+        },
+        {
+          "region": 3,
+          "level": 14,
+          "minute": 6.05,
+          "seconds": 62.8,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.39,
+          "bossSpawnTime": 326.55000000004,
+          "bossFightSeconds": 31.4
+        },
+        {
+          "region": 3,
+          "level": 16,
+          "minute": 7.31,
+          "seconds": 46.2,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.32,
+          "bossSpawnTime": 385.0500000000533,
+          "bossFightSeconds": 19.9
+        },
+        {
+          "region": 4,
+          "level": 18,
+          "minute": 8.3,
+          "seconds": 40.3,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.39,
+          "bossSpawnTime": 429.6500000000634,
+          "bossFightSeconds": 16.3
+        },
+        {
+          "region": 4,
+          "level": 20,
+          "minute": 9.65,
+          "seconds": 35.5,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.33,
+          "bossSpawnTime": 489.9000000000771,
+          "bossFightSeconds": 15.3
+        },
+        {
+          "region": 4,
+          "level": 21,
+          "minute": 10.44,
+          "seconds": 36.5,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.3,
+          "bossSpawnTime": 529.7500000000659,
+          "bossFightSeconds": 12
+        },
+        {
+          "region": 5,
+          "level": 23,
+          "minute": 11.26,
+          "seconds": 44.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.41,
+          "bossSpawnTime": 566.8000000000322,
+          "bossFightSeconds": 20.1
+        },
+        {
+          "region": 5,
+          "level": 25,
+          "minute": 12.81,
+          "seconds": 43.3,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.37,
+          "bossSpawnTime": 647.5999999999588,
+          "bossFightSeconds": 14.5
+        },
+        {
+          "region": 5,
+          "level": 26,
+          "minute": 13.74,
+          "seconds": 40.8,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.34,
+          "bossSpawnTime": 690.0999999999201,
+          "bossFightSeconds": 12.8
+        },
+        {
+          "region": 5,
+          "level": 27,
+          "minute": 14.62,
+          "seconds": 32.7,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.33,
+          "bossSpawnTime": 723.7499999998895,
+          "bossFightSeconds": 11.9
+        },
+        {
+          "region": 6,
+          "level": 29,
+          "minute": 15.87,
+          "seconds": 37.1,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.48,
+          "bossSpawnTime": 784.9999999998338,
+          "bossFightSeconds": 13.3
+        },
+        {
+          "region": 6,
+          "level": 30,
+          "minute": 16.69,
+          "seconds": 36.2,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.47,
+          "bossSpawnTime": 823.0499999997992,
+          "bossFightSeconds": 11.5
+        },
+        {
+          "region": 6,
+          "level": 31,
+          "minute": 17.49,
+          "seconds": 42.7,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.47,
+          "bossSpawnTime": 860.0499999997655,
+          "bossFightSeconds": 17.2
+        },
+        {
+          "region": 6,
+          "level": 32,
+          "minute": 18.92,
+          "seconds": 33.8,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.39,
+          "bossSpawnTime": 926.549999999705,
+          "bossFightSeconds": 10.4
+        },
+        {
+          "region": 7,
+          "level": 33,
+          "minute": 19.68,
+          "seconds": 46.1,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.6,
+          "bossSpawnTime": 965.5499999996696,
+          "bossFightSeconds": 17.6
+        },
+        {
+          "region": 6,
+          "level": 34,
+          "minute": 20.65,
+          "seconds": 32.9,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.42,
+          "bossSpawnTime": 1004.8499999996338,
+          "bossFightSeconds": 11.2
+        },
+        {
+          "region": 7,
+          "level": 35,
+          "minute": 22.08,
+          "seconds": 39.8,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.55,
+          "bossSpawnTime": 1077.9499999995674,
+          "bossFightSeconds": 13.5
+        },
+        {
+          "region": 7,
+          "level": 36,
+          "minute": 22.94,
+          "seconds": 32.3,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.54,
+          "bossSpawnTime": 1112.9999999995355,
+          "bossFightSeconds": 10.8
+        },
+        {
+          "region": 7,
+          "level": 37,
+          "minute": 23.68,
+          "seconds": 49.3,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.6,
+          "bossSpawnTime": 1155.9999999994964,
+          "bossFightSeconds": 17.1
+        },
+        {
+          "region": 8,
+          "level": 38,
+          "minute": 25.25,
+          "seconds": 54.1,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.82,
+          "bossSpawnTime": 1227.3999999994314,
+          "bossFightSeconds": 27.6
+        },
+        {
+          "region": 7,
+          "level": 39,
+          "minute": 26.48,
+          "seconds": 37.2,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.49,
+          "bossSpawnTime": 1287.5499999993767,
+          "bossFightSeconds": 12.3
+        },
+        {
+          "region": 8,
+          "level": 40,
+          "minute": 27.3,
+          "seconds": 48.5,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.86,
+          "bossSpawnTime": 1324.3499999993433,
+          "bossFightSeconds": 24
+        },
+        {
+          "region": 8,
+          "level": 41,
+          "minute": 28.84,
+          "seconds": 38.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.7,
+          "bossSpawnTime": 1398.9499999992754,
+          "bossFightSeconds": 15.1
+        },
+        {
+          "region": 8,
+          "level": 42,
+          "minute": 29.68,
+          "seconds": 34.9,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.69,
+          "bossSpawnTime": 1436.799999999241,
+          "bossFightSeconds": 12.1
+        },
+        {
+          "region": 9,
+          "level": 43,
+          "minute": 30.47,
+          "seconds": 50.7,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 1.22,
+          "bossSpawnTime": 1472.4999999992085,
+          "bossFightSeconds": 27.1
+        },
+        {
+          "region": 8,
+          "level": 44,
+          "minute": 32.25,
+          "seconds": 34.9,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.6,
+          "bossSpawnTime": 1562.3499999991268,
+          "bossFightSeconds": 11.4
+        },
+        {
+          "region": 9,
+          "level": 45,
+          "minute": 33.03,
+          "seconds": 45.7,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.94,
+          "bossSpawnTime": 1598.9499999990935,
+          "bossFightSeconds": 20.5
+        },
+        {
+          "region": 9,
+          "level": 46,
+          "minute": 33.99,
+          "seconds": 47.3,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 1.02,
+          "bossSpawnTime": 1642.5499999990539,
+          "bossFightSeconds": 24.2
+        },
+        {
+          "region": 9,
+          "level": 47,
+          "minute": 35.54,
+          "seconds": 51,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.85,
+          "bossSpawnTime": 1724.949999998979,
+          "bossFightSeconds": 21.7
+        },
+        {
+          "region": 10,
+          "level": 48,
+          "minute": 36.59,
+          "seconds": 43.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 1.33,
+          "bossSpawnTime": 1771.1999999989368,
+          "bossFightSeconds": 19
+        },
+        {
+          "region": 9,
+          "level": 49,
+          "minute": 37.52,
+          "seconds": 40.5,
+          "result": "death",
+          "prepared": false,
+          "bossBurstFraction": 0.91,
+          "bossSpawnTime": 1813.6499999988982
+        },
+        {
+          "region": 9,
+          "level": 49,
+          "minute": 38.94,
+          "seconds": 32.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.8,
+          "bossSpawnTime": 1879.5499999988383,
+          "bossFightSeconds": 11.2
+        },
+        {
+          "region": 10,
+          "level": 50,
+          "minute": 39.68,
+          "seconds": 34.2,
+          "result": "death",
+          "prepared": true,
+          "bossBurstFraction": 1.14,
+          "bossSpawnTime": 1916.5499999988047
+        },
+        {
+          "region": 10,
+          "level": 50,
+          "minute": 40.45,
+          "seconds": 64.3,
+          "result": "death",
+          "prepared": false,
+          "bossBurstFraction": 1.29,
+          "bossSpawnTime": 1954.0499999987705
+        },
+        {
+          "region": 9,
+          "level": 52,
+          "minute": 42.4,
+          "seconds": 34.9,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.69,
+          "bossSpawnTime": 2048.7499999986876,
+          "bossFightSeconds": 11
+        },
+        {
+          "region": 10,
+          "level": 52,
+          "minute": 43.18,
+          "seconds": 28.9,
+          "result": "death",
+          "prepared": true,
+          "bossBurstFraction": 1.07,
+          "bossSpawnTime": 2084.549999998818
+        },
+        {
+          "region": 10,
+          "level": 53,
+          "minute": 43.86,
+          "seconds": 58.7,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 1.19,
+          "bossSpawnTime": 2116.749999998935,
+          "bossFightSeconds": 30.6
+        },
+        {
+          "region": 10,
+          "level": 54,
+          "minute": 45.59,
+          "seconds": 43.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 1.03,
+          "bossSpawnTime": 2198.649999999233,
+          "bossFightSeconds": 20.3
+        },
+        {
+          "region": 10,
+          "level": 54,
+          "minute": 46.54,
+          "seconds": 11.1,
+          "result": "return",
+          "prepared": true,
+          "bossBurstFraction": 1.03
+        }
+      ],
+      "minHp": 0.017289965692379203,
+      "garrisonDamageShare": 0.503,
+      "healing": 37594,
+      "damageTaken": 95207,
+      "snapshot": {
+        "endless": {
+          "bestWave": 0,
+          "bestDanger": 0,
+          "mastery": 0,
+          "shards": 0,
+          "rewards": {
+            "gold": 0,
+            "wood": 0,
+            "iron": 0,
+            "crystal": 0,
+            "shards": 0,
+            "rareDrops": 0
+          }
+        },
+        "version": 1,
+        "level": 55,
+        "xp": 0,
+        "gold": 7648,
+        "supplies": 0,
+        "materials": {
+          "wood": 1220,
+          "iron": 1184,
+          "crystal": 844
+        },
+        "equipment": {
+          "weapon": 18,
+          "armor": 18,
+          "charm": 18
+        },
+        "bases": [
+          {
+            "name": "緑風の野営地",
+            "upgrades": {
+              "attack": 18,
+              "speed": 12,
+              "range": 8,
+              "health": 17,
+              "move": 8,
+              "soldiers": 10,
+              "training": 15,
+              "wall": 15,
+              "tower": 8,
+              "cannon": 8,
+              "healer": 8,
+              "storage": 8,
+              "forge": 12,
+              "base": 0
+            },
+            "hp": 3500,
+            "wave": 16
+          }
+        ],
+        "activeBase": 0,
+        "discoveries": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "bosses": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "camps": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "visited": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "expeditionUnlocked": true,
+        "kills": 1337,
+        "elapsed": 2231.2499999993515,
+        "nextRaid": 2675.4499999991485,
+        "raidPending": false,
+        "raids": 0,
+        "raidTime": 75,
+        "skill": 8,
+        "settings": {
+          "particles": true,
+          "shake": true,
+          "sfxVolume": 0.55,
+          "sfxMuted": false
+        },
+        "completed": true
+      }
+    },
+    {
+      "style": "balanced",
+      "seed": 89,
+      "ability": "casual",
+      "omit": "base",
+      "level": 55,
+      "completed": true,
+      "minutes": 46.96,
+      "completeMinute": 44.79,
+      "level55Minute": 46.96,
+      "deaths": 8,
+      "losses": 0,
+      "waves": 16,
+      "expeditions": 42,
+      "baseMinutes": 8.39,
+      "expeditionMinutes": 28.75,
+      "gold": 8154,
+      "materials": {
+        "wood": 1434,
+        "iron": 1095,
+        "crystal": 863
+      },
+      "equipment": {
+        "weapon": 18,
+        "armor": 18,
+        "charm": 18
+      },
+      "upgrades": {
+        "attack": 18,
+        "speed": 12,
+        "range": 8,
+        "health": 17,
+        "move": 8,
+        "soldiers": 10,
+        "training": 15,
+        "wall": 15,
+        "tower": 8,
+        "cannon": 8,
+        "healer": 8,
+        "storage": 8,
+        "forge": 12,
+        "base": 0
+      },
+      "discoveries": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "bosses": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "purchases": [
+        {
+          "minute": 0.35,
+          "level": 2,
+          "item": "attack",
+          "rank": 1,
+          "gold": 45
+        },
+        {
+          "minute": 0.35,
+          "level": 2,
+          "item": "health",
+          "rank": 1,
+          "gold": 45
+        },
+        {
+          "minute": 0.35,
+          "level": 2,
+          "item": "speed",
+          "rank": 1,
+          "gold": 60
+        },
+        {
+          "minute": 0.75,
+          "level": 2,
+          "item": "weapon",
+          "rank": 1,
+          "gold": 85
+        },
+        {
+          "minute": 0.75,
+          "level": 2,
+          "item": "armor",
+          "rank": 1,
+          "gold": 85
+        },
+        {
+          "minute": 1.9,
+          "level": 5,
+          "item": "attack",
+          "rank": 2,
+          "gold": 61
+        },
+        {
+          "minute": 1.9,
+          "level": 5,
+          "item": "soldiers",
+          "rank": 1,
+          "gold": 85
+        },
+        {
+          "minute": 1.9,
+          "level": 5,
+          "item": "health",
+          "rank": 2,
+          "gold": 61
+        },
+        {
+          "minute": 1.9,
+          "level": 5,
+          "item": "wall",
+          "rank": 1,
+          "gold": 70
+        },
+        {
+          "minute": 1.9,
+          "level": 5,
+          "item": "training",
+          "rank": 1,
+          "gold": 80
+        },
+        {
+          "minute": 1.9,
+          "level": 5,
+          "item": "charm",
+          "rank": 1,
+          "gold": 85
+        },
+        {
+          "minute": 3.38,
+          "level": 8,
+          "item": "weapon",
+          "rank": 2,
+          "gold": 111
+        },
+        {
+          "minute": 3.38,
+          "level": 8,
+          "item": "skill",
+          "rank": 1,
+          "gold": 100
+        },
+        {
+          "minute": 3.38,
+          "level": 8,
+          "item": "speed",
+          "rank": 2,
+          "gold": 84
+        },
+        {
+          "minute": 3.38,
+          "level": 8,
+          "item": "storage",
+          "rank": 1,
+          "gold": 95
+        },
+        {
+          "minute": 3.38,
+          "level": 8,
+          "item": "attack",
+          "rank": 3,
+          "gold": 82
+        },
+        {
+          "minute": 3.38,
+          "level": 8,
+          "item": "range",
+          "rank": 1,
+          "gold": 65
+        },
+        {
+          "minute": 3.38,
+          "level": 8,
+          "item": "move",
+          "rank": 1,
+          "gold": 65
+        },
+        {
+          "minute": 3.38,
+          "level": 8,
+          "item": "armor",
+          "rank": 2,
+          "gold": 111
+        },
+        {
+          "minute": 3.38,
+          "level": 8,
+          "item": "health",
+          "rank": 3,
+          "gold": 82
+        },
+        {
+          "minute": 3.38,
+          "level": 8,
+          "item": "weapon",
+          "rank": 3,
+          "gold": 144
+        },
+        {
+          "minute": 4.61,
+          "level": 11,
+          "item": "tower",
+          "rank": 1,
+          "gold": 130
+        },
+        {
+          "minute": 4.61,
+          "level": 11,
+          "item": "soldiers",
+          "rank": 2,
+          "gold": 115
+        },
+        {
+          "minute": 4.61,
+          "level": 11,
+          "item": "speed",
+          "rank": 3,
+          "gold": 118
+        },
+        {
+          "minute": 4.61,
+          "level": 11,
+          "item": "attack",
+          "rank": 4,
+          "gold": 111
+        },
+        {
+          "minute": 4.61,
+          "level": 11,
+          "item": "wall",
+          "rank": 2,
+          "gold": 95
+        },
+        {
+          "minute": 4.61,
+          "level": 11,
+          "item": "training",
+          "rank": 2,
+          "gold": 109
+        },
+        {
+          "minute": 4.61,
+          "level": 11,
+          "item": "armor",
+          "rank": 3,
+          "gold": 144
+        },
+        {
+          "minute": 4.61,
+          "level": 11,
+          "item": "health",
+          "rank": 4,
+          "gold": 111
+        },
+        {
+          "minute": 4.61,
+          "level": 11,
+          "item": "storage",
+          "rank": 2,
+          "gold": 133
+        },
+        {
+          "minute": 4.61,
+          "level": 11,
+          "item": "weapon",
+          "rank": 4,
+          "gold": 187
+        },
+        {
+          "minute": 4.61,
+          "level": 11,
+          "item": "range",
+          "rank": 2,
+          "gold": 94
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "healer",
+          "rank": 1,
+          "gold": 110
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "attack",
+          "rank": 5,
+          "gold": 149
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "tower",
+          "rank": 2,
+          "gold": 189
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "move",
+          "rank": 2,
+          "gold": 98
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "speed",
+          "rank": 4,
+          "gold": 165
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "soldiers",
+          "rank": 3,
+          "gold": 155
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "wall",
+          "rank": 3,
+          "gold": 128
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "armor",
+          "rank": 4,
+          "gold": 187
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "training",
+          "rank": 3,
+          "gold": 148
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "health",
+          "rank": 5,
+          "gold": 149
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "healer",
+          "rank": 2,
+          "gold": 154
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "attack",
+          "rank": 6,
+          "gold": 202
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "storage",
+          "rank": 3,
+          "gold": 186
+        },
+        {
+          "minute": 5.81,
+          "level": 14,
+          "item": "range",
+          "rank": 3,
+          "gold": 137
+        },
+        {
+          "minute": 6.25,
+          "level": 14,
+          "item": "speed",
+          "rank": 5,
+          "gold": 230
+        },
+        {
+          "minute": 6.25,
+          "level": 14,
+          "item": "soldiers",
+          "rank": 4,
+          "gold": 209
+        },
+        {
+          "minute": 6.25,
+          "level": 14,
+          "item": "charm",
+          "rank": 4,
+          "gold": 187
+        },
+        {
+          "minute": 6.25,
+          "level": 14,
+          "item": "wall",
+          "rank": 4,
+          "gold": 172
+        },
+        {
+          "minute": 7.44,
+          "level": 16,
+          "item": "forge",
+          "rank": 1,
+          "gold": 150
+        },
+        {
+          "minute": 7.44,
+          "level": 16,
+          "item": "forge",
+          "rank": 2,
+          "gold": 210
+        },
+        {
+          "minute": 7.44,
+          "level": 16,
+          "item": "weapon",
+          "rank": 5,
+          "gold": 226
+        },
+        {
+          "minute": 7.44,
+          "level": 16,
+          "item": "armor",
+          "rank": 5,
+          "gold": 226
+        },
+        {
+          "minute": 7.44,
+          "level": 16,
+          "item": "weapon",
+          "rank": 6,
+          "gold": 294
+        },
+        {
+          "minute": 7.44,
+          "level": 16,
+          "item": "tower",
+          "rank": 3,
+          "gold": 273
+        },
+        {
+          "minute": 7.44,
+          "level": 16,
+          "item": "health",
+          "rank": 6,
+          "gold": 202
+        },
+        {
+          "minute": 7.44,
+          "level": 16,
+          "item": "move",
+          "rank": 3,
+          "gold": 146
+        },
+        {
+          "minute": 7.44,
+          "level": 16,
+          "item": "training",
+          "rank": 4,
+          "gold": 201
+        },
+        {
+          "minute": 7.44,
+          "level": 16,
+          "item": "forge",
+          "rank": 3,
+          "gold": 294
+        },
+        {
+          "minute": 7.44,
+          "level": 16,
+          "item": "skill",
+          "rank": 2,
+          "gold": 400
+        },
+        {
+          "minute": 8.4,
+          "level": 18,
+          "item": "attack",
+          "rank": 7,
+          "gold": 272
+        },
+        {
+          "minute": 8.4,
+          "level": 18,
+          "item": "armor",
+          "rank": 6,
+          "gold": 282
+        },
+        {
+          "minute": 8.4,
+          "level": 18,
+          "item": "weapon",
+          "rank": 7,
+          "gold": 367
+        },
+        {
+          "minute": 8.4,
+          "level": 18,
+          "item": "charm",
+          "rank": 5,
+          "gold": 217
+        },
+        {
+          "minute": 8.4,
+          "level": 18,
+          "item": "healer",
+          "rank": 3,
+          "gold": 216
+        },
+        {
+          "minute": 8.4,
+          "level": 18,
+          "item": "storage",
+          "rank": 4,
+          "gold": 261
+        },
+        {
+          "minute": 8.4,
+          "level": 18,
+          "item": "speed",
+          "rank": 6,
+          "gold": 323
+        },
+        {
+          "minute": 8.4,
+          "level": 18,
+          "item": "soldiers",
+          "rank": 5,
+          "gold": 282
+        },
+        {
+          "minute": 8.4,
+          "level": 18,
+          "item": "health",
+          "rank": 7,
+          "gold": 272
+        },
+        {
+          "minute": 9.26,
+          "level": 20,
+          "item": "wall",
+          "rank": 5,
+          "gold": 233
+        },
+        {
+          "minute": 9.26,
+          "level": 20,
+          "item": "training",
+          "rank": 5,
+          "gold": 274
+        },
+        {
+          "minute": 9.26,
+          "level": 20,
+          "item": "range",
+          "rank": 4,
+          "gold": 198
+        },
+        {
+          "minute": 9.26,
+          "level": 20,
+          "item": "tower",
+          "rank": 4,
+          "gold": 396
+        },
+        {
+          "minute": 9.26,
+          "level": 20,
+          "item": "attack",
+          "rank": 8,
+          "gold": 368
+        },
+        {
+          "minute": 9.26,
+          "level": 20,
+          "item": "armor",
+          "rank": 7,
+          "gold": 367
+        },
+        {
+          "minute": 9.26,
+          "level": 20,
+          "item": "forge",
+          "rank": 4,
+          "gold": 412
+        },
+        {
+          "minute": 9.26,
+          "level": 20,
+          "item": "weapon",
+          "rank": 8,
+          "gold": 459
+        },
+        {
+          "minute": 9.26,
+          "level": 20,
+          "item": "charm",
+          "rank": 6,
+          "gold": 271
+        },
+        {
+          "minute": 9.72,
+          "level": 20,
+          "item": "move",
+          "rank": 4,
+          "gold": 219
+        },
+        {
+          "minute": 9.72,
+          "level": 20,
+          "item": "speed",
+          "rank": 7,
+          "gold": 452
+        },
+        {
+          "minute": 9.72,
+          "level": 20,
+          "item": "health",
+          "rank": 8,
+          "gold": 368
+        },
+        {
+          "minute": 10.63,
+          "level": 22,
+          "item": "soldiers",
+          "rank": 6,
+          "gold": 381
+        },
+        {
+          "minute": 10.63,
+          "level": 22,
+          "item": "healer",
+          "rank": 4,
+          "gold": 302
+        },
+        {
+          "minute": 10.63,
+          "level": 22,
+          "item": "wall",
+          "rank": 6,
+          "gold": 314
+        },
+        {
+          "minute": 10.63,
+          "level": 22,
+          "item": "weapon",
+          "rank": 9,
+          "gold": 596
+        },
+        {
+          "minute": 10.63,
+          "level": 22,
+          "item": "armor",
+          "rank": 8,
+          "gold": 459
+        },
+        {
+          "minute": 10.63,
+          "level": 22,
+          "item": "training",
+          "rank": 6,
+          "gold": 372
+        },
+        {
+          "minute": 10.63,
+          "level": 22,
+          "item": "attack",
+          "rank": 9,
+          "gold": 496
+        },
+        {
+          "minute": 10.63,
+          "level": 22,
+          "item": "charm",
+          "rank": 7,
+          "gold": 353
+        },
+        {
+          "minute": 11.42,
+          "level": 23,
+          "item": "tower",
+          "rank": 5,
+          "gold": 575
+        },
+        {
+          "minute": 11.42,
+          "level": 23,
+          "item": "forge",
+          "rank": 5,
+          "gold": 576
+        },
+        {
+          "minute": 11.42,
+          "level": 23,
+          "item": "skill",
+          "rank": 3,
+          "gold": 900
+        },
+        {
+          "minute": 11.42,
+          "level": 23,
+          "item": "health",
+          "rank": 9,
+          "gold": 496
+        },
+        {
+          "minute": 11.42,
+          "level": 23,
+          "item": "armor",
+          "rank": 9,
+          "gold": 572
+        },
+        {
+          "minute": 12.58,
+          "level": 25,
+          "item": "storage",
+          "rank": 5,
+          "gold": 365
+        },
+        {
+          "minute": 12.58,
+          "level": 25,
+          "item": "range",
+          "rank": 5,
+          "gold": 287
+        },
+        {
+          "minute": 12.58,
+          "level": 25,
+          "item": "move",
+          "rank": 5,
+          "gold": 329
+        },
+        {
+          "minute": 12.58,
+          "level": 25,
+          "item": "weapon",
+          "rank": 10,
+          "gold": 744
+        },
+        {
+          "minute": 12.58,
+          "level": 25,
+          "item": "speed",
+          "rank": 8,
+          "gold": 632
+        },
+        {
+          "minute": 12.58,
+          "level": 25,
+          "item": "wall",
+          "rank": 7,
+          "gold": 424
+        },
+        {
+          "minute": 12.58,
+          "level": 25,
+          "item": "charm",
+          "rank": 8,
+          "gold": 440
+        },
+        {
+          "minute": 12.58,
+          "level": 25,
+          "item": "attack",
+          "rank": 10,
+          "gold": 670
+        },
+        {
+          "minute": 12.58,
+          "level": 25,
+          "item": "healer",
+          "rank": 5,
+          "gold": 423
+        },
+        {
+          "minute": 13.16,
+          "level": 25,
+          "item": "training",
+          "rank": 7,
+          "gold": 506
+        },
+        {
+          "minute": 13.16,
+          "level": 25,
+          "item": "weapon",
+          "rank": 11,
+          "gold": 967
+        },
+        {
+          "minute": 13.16,
+          "level": 25,
+          "item": "armor",
+          "rank": 10,
+          "gold": 744
+        },
+        {
+          "minute": 13.92,
+          "level": 26,
+          "item": "forge",
+          "rank": 6,
+          "gold": 807
+        },
+        {
+          "minute": 13.92,
+          "level": 26,
+          "item": "health",
+          "rank": 10,
+          "gold": 670
+        },
+        {
+          "minute": 13.92,
+          "level": 26,
+          "item": "tower",
+          "rank": 6,
+          "gold": 833
+        },
+        {
+          "minute": 13.92,
+          "level": 26,
+          "item": "charm",
+          "rank": 9,
+          "gold": 548
+        },
+        {
+          "minute": 13.92,
+          "level": 26,
+          "item": "speed",
+          "rank": 9,
+          "gold": 885
+        },
+        {
+          "minute": 14.74,
+          "level": 28,
+          "item": "wall",
+          "rank": 8,
+          "gold": 572
+        },
+        {
+          "minute": 14.74,
+          "level": 28,
+          "item": "training",
+          "rank": 8,
+          "gold": 688
+        },
+        {
+          "minute": 14.74,
+          "level": 28,
+          "item": "weapon",
+          "rank": 12,
+          "gold": 1203
+        },
+        {
+          "minute": 14.74,
+          "level": 28,
+          "item": "armor",
+          "rank": 11,
+          "gold": 926
+        },
+        {
+          "minute": 14.74,
+          "level": 28,
+          "item": "charm",
+          "rank": 10,
+          "gold": 712
+        },
+        {
+          "minute": 15.63,
+          "level": 29,
+          "item": "cannon",
+          "rank": 1,
+          "gold": 280
+        },
+        {
+          "minute": 15.63,
+          "level": 29,
+          "item": "cannon",
+          "rank": 2,
+          "gold": 420
+        },
+        {
+          "minute": 15.63,
+          "level": 29,
+          "item": "cannon",
+          "rank": 3,
+          "gold": 630
+        },
+        {
+          "minute": 15.63,
+          "level": 29,
+          "item": "cannon",
+          "rank": 4,
+          "gold": 945
+        },
+        {
+          "minute": 15.63,
+          "level": 29,
+          "item": "skill",
+          "rank": 4,
+          "gold": 1600
+        },
+        {
+          "minute": 15.63,
+          "level": 29,
+          "item": "wall",
+          "rank": 9,
+          "gold": 772
+        },
+        {
+          "minute": 16.09,
+          "level": 29,
+          "item": "cannon",
+          "rank": 5,
+          "gold": 1418
+        },
+        {
+          "minute": 16.91,
+          "level": 30,
+          "item": "forge",
+          "rank": 7,
+          "gold": 1129
+        },
+        {
+          "minute": 16.91,
+          "level": 30,
+          "item": "speed",
+          "rank": 10,
+          "gold": 1240
+        },
+        {
+          "minute": 16.91,
+          "level": 30,
+          "item": "tower",
+          "rank": 7,
+          "gold": 1208
+        },
+        {
+          "minute": 16.91,
+          "level": 30,
+          "item": "charm",
+          "rank": 11,
+          "gold": 885
+        },
+        {
+          "minute": 17.68,
+          "level": 31,
+          "item": "weapon",
+          "rank": 13,
+          "gold": 1495
+        },
+        {
+          "minute": 17.68,
+          "level": 31,
+          "item": "armor",
+          "rank": 12,
+          "gold": 1150
+        },
+        {
+          "minute": 17.68,
+          "level": 31,
+          "item": "training",
+          "rank": 9,
+          "gold": 936
+        },
+        {
+          "minute": 18.5,
+          "level": 32,
+          "item": "weapon",
+          "rank": 14,
+          "gold": 1944
+        },
+        {
+          "minute": 18.5,
+          "level": 32,
+          "item": "wall",
+          "rank": 10,
+          "gold": 1043
+        },
+        {
+          "minute": 18.5,
+          "level": 32,
+          "item": "armor",
+          "rank": 13,
+          "gold": 1495
+        },
+        {
+          "minute": 19.01,
+          "level": 33,
+          "item": "storage",
+          "rank": 6,
+          "gold": 511
+        },
+        {
+          "minute": 19.01,
+          "level": 33,
+          "item": "range",
+          "rank": 6,
+          "gold": 417
+        },
+        {
+          "minute": 19.01,
+          "level": 33,
+          "item": "move",
+          "rank": 6,
+          "gold": 494
+        },
+        {
+          "minute": 19.01,
+          "level": 33,
+          "item": "healer",
+          "rank": 6,
+          "gold": 592
+        },
+        {
+          "minute": 19.91,
+          "level": 34,
+          "item": "soldiers",
+          "rank": 7,
+          "gold": 515
+        },
+        {
+          "minute": 19.91,
+          "level": 34,
+          "item": "forge",
+          "rank": 8,
+          "gold": 1581
+        },
+        {
+          "minute": 19.91,
+          "level": 34,
+          "item": "charm",
+          "rank": 12,
+          "gold": 1097
+        },
+        {
+          "minute": 19.91,
+          "level": 34,
+          "item": "cannon",
+          "rank": 6,
+          "gold": 2126
+        },
+        {
+          "minute": 20.71,
+          "level": 34,
+          "item": "training",
+          "rank": 10,
+          "gold": 1273
+        },
+        {
+          "minute": 20.71,
+          "level": 34,
+          "item": "skill",
+          "rank": 5,
+          "gold": 2500
+        },
+        {
+          "minute": 21.56,
+          "level": 35,
+          "item": "armor",
+          "rank": 14,
+          "gold": 1854
+        },
+        {
+          "minute": 21.56,
+          "level": 35,
+          "item": "charm",
+          "rank": 13,
+          "gold": 1426
+        },
+        {
+          "minute": 21.56,
+          "level": 35,
+          "item": "forge",
+          "rank": 9,
+          "gold": 2214
+        },
+        {
+          "minute": 22.23,
+          "level": 36,
+          "item": "soldiers",
+          "rank": 8,
+          "gold": 695
+        },
+        {
+          "minute": 22.23,
+          "level": 36,
+          "item": "tower",
+          "rank": 8,
+          "gold": 1752
+        },
+        {
+          "minute": 22.99,
+          "level": 37,
+          "item": "cannon",
+          "rank": 7,
+          "gold": 3189
+        },
+        {
+          "minute": 22.99,
+          "level": 37,
+          "item": "charm",
+          "rank": 14,
+          "gold": 1763
+        },
+        {
+          "minute": 23.74,
+          "level": 37,
+          "item": "skill",
+          "rank": 6,
+          "gold": 3600
+        },
+        {
+          "minute": 24.63,
+          "level": 38,
+          "item": "forge",
+          "rank": 10,
+          "gold": 3099
+        },
+        {
+          "minute": 25.19,
+          "level": 38,
+          "item": "skill",
+          "rank": 7,
+          "gold": 4900
+        },
+        {
+          "minute": 26.16,
+          "level": 39,
+          "item": "weapon",
+          "rank": 15,
+          "gold": 2175
+        },
+        {
+          "minute": 26.16,
+          "level": 39,
+          "item": "weapon",
+          "rank": 16,
+          "gold": 2828
+        },
+        {
+          "minute": 26.16,
+          "level": 39,
+          "item": "armor",
+          "rank": 15,
+          "gold": 2175
+        },
+        {
+          "minute": 26.99,
+          "level": 40,
+          "item": "weapon",
+          "rank": 17,
+          "gold": 3676
+        },
+        {
+          "minute": 26.99,
+          "level": 40,
+          "item": "charm",
+          "rank": 15,
+          "gold": 2175
+        },
+        {
+          "minute": 28,
+          "level": 41,
+          "item": "storage",
+          "rank": 7,
+          "gold": 715
+        },
+        {
+          "minute": 28,
+          "level": 41,
+          "item": "range",
+          "rank": 7,
+          "gold": 604
+        },
+        {
+          "minute": 28,
+          "level": 41,
+          "item": "healer",
+          "rank": 7,
+          "gold": 828
+        },
+        {
+          "minute": 28,
+          "level": 41,
+          "item": "move",
+          "rank": 7,
+          "gold": 740
+        },
+        {
+          "minute": 28,
+          "level": 41,
+          "item": "armor",
+          "rank": 16,
+          "gold": 2828
+        },
+        {
+          "minute": 28.57,
+          "level": 42,
+          "item": "weapon",
+          "rank": 18,
+          "gold": 4779
+        },
+        {
+          "minute": 29.33,
+          "level": 42,
+          "item": "armor",
+          "rank": 17,
+          "gold": 3676
+        },
+        {
+          "minute": 30.17,
+          "level": 43,
+          "item": "soldiers",
+          "rank": 9,
+          "gold": 938
+        },
+        {
+          "minute": 30.17,
+          "level": 43,
+          "item": "cannon",
+          "rank": 8,
+          "gold": 4784
+        },
+        {
+          "minute": 31.14,
+          "level": 43,
+          "item": "attack",
+          "rank": 11,
+          "gold": 905
+        },
+        {
+          "minute": 31.14,
+          "level": 43,
+          "item": "health",
+          "rank": 11,
+          "gold": 905
+        },
+        {
+          "minute": 31.14,
+          "level": 43,
+          "item": "attack",
+          "rank": 12,
+          "gold": 1221
+        },
+        {
+          "minute": 31.14,
+          "level": 43,
+          "item": "health",
+          "rank": 12,
+          "gold": 1221
+        },
+        {
+          "minute": 31.14,
+          "level": 43,
+          "item": "attack",
+          "rank": 13,
+          "gold": 1649
+        },
+        {
+          "minute": 31.83,
+          "level": 44,
+          "item": "speed",
+          "rank": 11,
+          "gold": 1736
+        },
+        {
+          "minute": 31.83,
+          "level": 44,
+          "item": "health",
+          "rank": 13,
+          "gold": 1649
+        },
+        {
+          "minute": 31.83,
+          "level": 44,
+          "item": "attack",
+          "rank": 14,
+          "gold": 2226
+        },
+        {
+          "minute": 32.62,
+          "level": 45,
+          "item": "wall",
+          "rank": 11,
+          "gold": 1407
+        },
+        {
+          "minute": 32.62,
+          "level": 45,
+          "item": "speed",
+          "rank": 12,
+          "gold": 2430
+        },
+        {
+          "minute": 32.62,
+          "level": 45,
+          "item": "training",
+          "rank": 11,
+          "gold": 1732
+        },
+        {
+          "minute": 33.6,
+          "level": 46,
+          "item": "health",
+          "rank": 14,
+          "gold": 2226
+        },
+        {
+          "minute": 33.6,
+          "level": 46,
+          "item": "attack",
+          "rank": 15,
+          "gold": 3005
+        },
+        {
+          "minute": 33.6,
+          "level": 46,
+          "item": "wall",
+          "rank": 12,
+          "gold": 1900
+        },
+        {
+          "minute": 34.32,
+          "level": 46,
+          "item": "training",
+          "rank": 12,
+          "gold": 2355
+        },
+        {
+          "minute": 34.32,
+          "level": 46,
+          "item": "wall",
+          "rank": 13,
+          "gold": 2565
+        },
+        {
+          "minute": 34.88,
+          "level": 46,
+          "item": "health",
+          "rank": 15,
+          "gold": 3005
+        },
+        {
+          "minute": 35.75,
+          "level": 47,
+          "item": "attack",
+          "rank": 16,
+          "gold": 4057
+        },
+        {
+          "minute": 35.75,
+          "level": 47,
+          "item": "training",
+          "rank": 13,
+          "gold": 3203
+        },
+        {
+          "minute": 36.54,
+          "level": 48,
+          "item": "charm",
+          "rank": 16,
+          "gold": 2828
+        },
+        {
+          "minute": 36.54,
+          "level": 48,
+          "item": "health",
+          "rank": 16,
+          "gold": 4057
+        },
+        {
+          "minute": 37.22,
+          "level": 48,
+          "item": "forge",
+          "rank": 11,
+          "gold": 4339
+        },
+        {
+          "minute": 37.77,
+          "level": 49,
+          "item": "storage",
+          "rank": 8,
+          "gold": 1001
+        },
+        {
+          "minute": 37.77,
+          "level": 49,
+          "item": "range",
+          "rank": 8,
+          "gold": 876
+        },
+        {
+          "minute": 37.77,
+          "level": 49,
+          "item": "healer",
+          "rank": 8,
+          "gold": 1160
+        },
+        {
+          "minute": 37.77,
+          "level": 49,
+          "item": "move",
+          "rank": 8,
+          "gold": 1111
+        },
+        {
+          "minute": 38.67,
+          "level": 49,
+          "item": "attack",
+          "rank": 17,
+          "gold": 5477
+        },
+        {
+          "minute": 39.46,
+          "level": 50,
+          "item": "soldiers",
+          "rank": 10,
+          "gold": 1266
+        },
+        {
+          "minute": 39.46,
+          "level": 50,
+          "item": "armor",
+          "rank": 18,
+          "gold": 4779
+        },
+        {
+          "minute": 40.23,
+          "level": 50,
+          "item": "skill",
+          "rank": 8,
+          "gold": 6400
+        },
+        {
+          "minute": 40.94,
+          "level": 51,
+          "item": "wall",
+          "rank": 14,
+          "gold": 3463
+        },
+        {
+          "minute": 41.6,
+          "level": 51,
+          "item": "charm",
+          "rank": 17,
+          "gold": 3676
+        },
+        {
+          "minute": 42.37,
+          "level": 52,
+          "item": "training",
+          "rank": 14,
+          "gold": 4356
+        },
+        {
+          "minute": 42.37,
+          "level": 52,
+          "item": "health",
+          "rank": 17,
+          "gold": 5477
+        },
+        {
+          "minute": 43.19,
+          "level": 52,
+          "item": "wall",
+          "rank": 15,
+          "gold": 4675
+        },
+        {
+          "minute": 43.71,
+          "level": 52,
+          "item": "forge",
+          "rank": 12,
+          "gold": 6074
+        },
+        {
+          "minute": 44.79,
+          "level": 53,
+          "item": "attack",
+          "rank": 18,
+          "gold": 7394
+        },
+        {
+          "minute": 45.49,
+          "level": 54,
+          "item": "charm",
+          "rank": 18,
+          "gold": 4779
+        },
+        {
+          "minute": 46.62,
+          "level": 54,
+          "item": "training",
+          "rank": 15,
+          "gold": 5924
+        }
+      ],
+      "maxPurchaseGap": 1.48,
+      "milestones": [
+        {
+          "level": 1,
+          "minute": 0,
+          "gold": 35,
+          "region": -1,
+          "deaths": 0,
+          "xp": 0,
+          "weapon": 0,
+          "armor": 0,
+          "hp": 120,
+          "attack": 18,
+          "wave": 0
+        },
+        {
+          "level": 2,
+          "minute": 0.35,
+          "gold": 170,
+          "region": -1,
+          "deaths": 0,
+          "xp": 3,
+          "weapon": 0,
+          "armor": 0,
+          "hp": 139,
+          "attack": 22,
+          "wave": 1
+        },
+        {
+          "level": 3,
+          "minute": 0.9,
+          "gold": 30,
+          "region": -1,
+          "deaths": 0,
+          "xp": 15,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 202,
+          "attack": 33,
+          "wave": 2
+        },
+        {
+          "level": 4,
+          "minute": 1.9,
+          "gold": 326,
+          "region": -1,
+          "deaths": 0,
+          "xp": 89,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 251,
+          "attack": 42,
+          "wave": 2
+        },
+        {
+          "level": 5,
+          "minute": 1.9,
+          "gold": 326,
+          "region": -1,
+          "deaths": 0,
+          "xp": 89,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 251,
+          "attack": 42,
+          "wave": 2
+        },
+        {
+          "level": 6,
+          "minute": 2.44,
+          "gold": 133,
+          "region": 0,
+          "deaths": 0,
+          "xp": 86,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 307,
+          "attack": 65,
+          "wave": 3
+        },
+        {
+          "level": 7,
+          "minute": 2.86,
+          "gold": 395,
+          "region": 0,
+          "deaths": 0,
+          "xp": 5,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 335,
+          "attack": 72,
+          "wave": 3
+        },
+        {
+          "level": 8,
+          "minute": 3.31,
+          "gold": 778,
+          "region": 0,
+          "deaths": 0,
+          "xp": 281,
+          "weapon": 1,
+          "armor": 1,
+          "hp": 362,
+          "attack": 78,
+          "wave": 3
+        },
+        {
+          "level": 9,
+          "minute": 3.73,
+          "gold": 187,
+          "region": 1,
+          "deaths": 0,
+          "xp": 43,
+          "weapon": 3,
+          "armor": 2,
+          "hp": 465,
+          "attack": 112,
+          "wave": 3
+        },
+        {
+          "level": 10,
+          "minute": 4.36,
+          "gold": 881,
+          "region": 1,
+          "deaths": 0,
+          "xp": 7,
+          "weapon": 3,
+          "armor": 2,
+          "hp": 498,
+          "attack": 121,
+          "wave": 3
+        },
+        {
+          "level": 11,
+          "minute": 4.52,
+          "gold": 1330,
+          "region": 1,
+          "deaths": 0,
+          "xp": 66,
+          "weapon": 3,
+          "armor": 2,
+          "hp": 530,
+          "attack": 129,
+          "wave": 3
+        },
+        {
+          "level": 12,
+          "minute": 5.13,
+          "gold": 730,
+          "region": 2,
+          "deaths": 0,
+          "xp": 125,
+          "weapon": 4,
+          "armor": 3,
+          "hp": 655,
+          "attack": 160,
+          "wave": 3
+        },
+        {
+          "level": 13,
+          "minute": 5.61,
+          "gold": 1333,
+          "region": 2,
+          "deaths": 0,
+          "xp": 20,
+          "weapon": 4,
+          "armor": 3,
+          "hp": 693,
+          "attack": 170,
+          "wave": 3
+        },
+        {
+          "level": 14,
+          "minute": 5.79,
+          "gold": 2043,
+          "region": 2,
+          "deaths": 0,
+          "xp": 51,
+          "weapon": 4,
+          "armor": 3,
+          "hp": 730,
+          "attack": 180,
+          "wave": 3
+        },
+        {
+          "level": 15,
+          "minute": 6.66,
+          "gold": 880,
+          "region": 3,
+          "deaths": 0,
+          "xp": 170,
+          "weapon": 4,
+          "armor": 4,
+          "hp": 876,
+          "attack": 213,
+          "wave": 4
+        },
+        {
+          "level": 16,
+          "minute": 7.25,
+          "gold": 1877,
+          "region": 3,
+          "deaths": 0,
+          "xp": 75,
+          "weapon": 4,
+          "armor": 4,
+          "hp": 919,
+          "attack": 224,
+          "wave": 4
+        },
+        {
+          "level": 17,
+          "minute": 7.74,
+          "gold": 349,
+          "region": 3,
+          "deaths": 0,
+          "xp": 200,
+          "weapon": 6,
+          "armor": 5,
+          "hp": 1081,
+          "attack": 331,
+          "wave": 4
+        },
+        {
+          "level": 18,
+          "minute": 8.4,
+          "gold": 2583,
+          "region": 3,
+          "deaths": 0,
+          "xp": 1768,
+          "weapon": 6,
+          "armor": 5,
+          "hp": 1130,
+          "attack": 347,
+          "wave": 4
+        },
+        {
+          "level": 19,
+          "minute": 8.84,
+          "gold": 1282,
+          "region": 4,
+          "deaths": 0,
+          "xp": 218,
+          "weapon": 7,
+          "armor": 6,
+          "hp": 1307,
+          "attack": 398,
+          "wave": 4
+        },
+        {
+          "level": 20,
+          "minute": 9.26,
+          "gold": 3158,
+          "region": 4,
+          "deaths": 0,
+          "xp": 617,
+          "weapon": 7,
+          "armor": 6,
+          "hp": 1361,
+          "attack": 416,
+          "wave": 4
+        },
+        {
+          "level": 21,
+          "minute": 10.12,
+          "gold": 1578,
+          "region": 4,
+          "deaths": 0,
+          "xp": 6,
+          "weapon": 8,
+          "armor": 7,
+          "hp": 1555,
+          "attack": 484,
+          "wave": 5
+        },
+        {
+          "level": 22,
+          "minute": 10.63,
+          "gold": 3433,
+          "region": 4,
+          "deaths": 0,
+          "xp": 147,
+          "weapon": 8,
+          "armor": 7,
+          "hp": 1614,
+          "attack": 504,
+          "wave": 5
+        },
+        {
+          "level": 23,
+          "minute": 11.42,
+          "gold": 3248,
+          "region": 4,
+          "deaths": 0,
+          "xp": 1843,
+          "weapon": 9,
+          "armor": 8,
+          "hp": 1743,
+          "attack": 567,
+          "wave": 5
+        },
+        {
+          "level": 24,
+          "minute": 12.01,
+          "gold": 2377,
+          "region": 5,
+          "deaths": 0,
+          "xp": 275,
+          "weapon": 9,
+          "armor": 9,
+          "hp": 1961,
+          "attack": 600,
+          "wave": 5
+        },
+        {
+          "level": 25,
+          "minute": 12.58,
+          "gold": 4603,
+          "region": 5,
+          "deaths": 0,
+          "xp": 616,
+          "weapon": 9,
+          "armor": 9,
+          "hp": 2028,
+          "attack": 622,
+          "wave": 5
+        },
+        {
+          "level": 26,
+          "minute": 13.5,
+          "gold": 1278,
+          "region": 5,
+          "deaths": 0,
+          "xp": 320,
+          "weapon": 11,
+          "armor": 10,
+          "hp": 2172,
+          "attack": 719,
+          "wave": 6
+        },
+        {
+          "level": 27,
+          "minute": 14.19,
+          "gold": 663,
+          "region": 5,
+          "deaths": 0,
+          "xp": 367,
+          "weapon": 11,
+          "armor": 10,
+          "hp": 2333,
+          "attack": 757,
+          "wave": 6
+        },
+        {
+          "level": 28,
+          "minute": 14.74,
+          "gold": 4136,
+          "region": 5,
+          "deaths": 0,
+          "xp": 417,
+          "weapon": 11,
+          "armor": 10,
+          "hp": 2405,
+          "attack": 782,
+          "wave": 6
+        },
+        {
+          "level": 29,
+          "minute": 15.54,
+          "gold": 3582,
+          "region": 6,
+          "deaths": 0,
+          "xp": 7,
+          "weapon": 12,
+          "armor": 11,
+          "hp": 2562,
+          "attack": 936,
+          "wave": 6
+        },
+        {
+          "level": 30,
+          "minute": 16.47,
+          "gold": 2057,
+          "region": 5,
+          "deaths": 0,
+          "xp": 625,
+          "weapon": 12,
+          "armor": 11,
+          "hp": 2637,
+          "attack": 964,
+          "wave": 7
+        },
+        {
+          "level": 31,
+          "minute": 17.31,
+          "gold": 1744,
+          "region": 6,
+          "deaths": 0,
+          "xp": 174,
+          "weapon": 12,
+          "armor": 11,
+          "hp": 2712,
+          "attack": 1010,
+          "wave": 7
+        },
+        {
+          "level": 32,
+          "minute": 18.12,
+          "gold": 2512,
+          "region": 6,
+          "deaths": 0,
+          "xp": 114,
+          "weapon": 13,
+          "armor": 12,
+          "hp": 2879,
+          "attack": 828,
+          "wave": 7
+        },
+        {
+          "level": 33,
+          "minute": 19.01,
+          "gold": 2400,
+          "region": -1,
+          "deaths": 0,
+          "xp": 347,
+          "weapon": 14,
+          "armor": 13,
+          "hp": 3050,
+          "attack": 879,
+          "wave": 7
+        },
+        {
+          "level": 34,
+          "minute": 19.9,
+          "gold": 5677,
+          "region": 7,
+          "deaths": 0,
+          "xp": 181,
+          "weapon": 14,
+          "armor": 13,
+          "hp": 3130,
+          "attack": 1178,
+          "wave": 8
+        },
+        {
+          "level": 35,
+          "minute": 21.04,
+          "gold": 1829,
+          "region": 6,
+          "deaths": 0,
+          "xp": 356,
+          "weapon": 14,
+          "armor": 13,
+          "hp": 3210,
+          "attack": 942,
+          "wave": 8
+        },
+        {
+          "level": 36,
+          "minute": 22.09,
+          "gold": 2554,
+          "region": -1,
+          "deaths": 0,
+          "xp": 225,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3391,
+          "attack": 982,
+          "wave": 8
+        },
+        {
+          "level": 37,
+          "minute": 22.99,
+          "gold": 6430,
+          "region": 7,
+          "deaths": 0,
+          "xp": 732,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3473,
+          "attack": 1318,
+          "wave": 9
+        },
+        {
+          "level": 38,
+          "minute": 24.22,
+          "gold": 4866,
+          "region": 7,
+          "deaths": 0,
+          "xp": 903,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3555,
+          "attack": 1031,
+          "wave": 9
+        },
+        {
+          "level": 39,
+          "minute": 25.49,
+          "gold": 2976,
+          "region": 8,
+          "deaths": 0,
+          "xp": 563,
+          "weapon": 14,
+          "armor": 14,
+          "hp": 3637,
+          "attack": 1405,
+          "wave": 10
+        },
+        {
+          "level": 40,
+          "minute": 26.47,
+          "gold": 2178,
+          "region": 7,
+          "deaths": 0,
+          "xp": 856,
+          "weapon": 16,
+          "armor": 15,
+          "hp": 3831,
+          "attack": 1525,
+          "wave": 10
+        },
+        {
+          "level": 41,
+          "minute": 27.61,
+          "gold": 4205,
+          "region": 8,
+          "deaths": 0,
+          "xp": 154,
+          "weapon": 17,
+          "armor": 15,
+          "hp": 3916,
+          "attack": 1225,
+          "wave": 10
+        },
+        {
+          "level": 42,
+          "minute": 28.57,
+          "gold": 5602,
+          "region": -1,
+          "deaths": 0,
+          "xp": 57,
+          "weapon": 17,
+          "armor": 16,
+          "hp": 4117,
+          "attack": 1253,
+          "wave": 11
+        },
+        {
+          "level": 43,
+          "minute": 29.91,
+          "gold": 5325,
+          "region": 8,
+          "deaths": 1,
+          "xp": 387,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 4324,
+          "attack": 1902,
+          "wave": 11
+        },
+        {
+          "level": 44,
+          "minute": 31.27,
+          "gold": 1298,
+          "region": -1,
+          "deaths": 2,
+          "xp": 178,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 4694,
+          "attack": 1573,
+          "wave": 11
+        },
+        {
+          "level": 45,
+          "minute": 32.44,
+          "gold": 4888,
+          "region": 8,
+          "deaths": 2,
+          "xp": 472,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 4933,
+          "attack": 2145,
+          "wave": 12
+        },
+        {
+          "level": 46,
+          "minute": 33.6,
+          "gold": 8354,
+          "region": 9,
+          "deaths": 2,
+          "xp": 3752,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5031,
+          "attack": 2199,
+          "wave": 12
+        },
+        {
+          "level": 47,
+          "minute": 35.28,
+          "gold": 3567,
+          "region": 9,
+          "deaths": 3,
+          "xp": 1446,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5427,
+          "attack": 2296,
+          "wave": 13
+        },
+        {
+          "level": 48,
+          "minute": 36.28,
+          "gold": 4840,
+          "region": 9,
+          "deaths": 3,
+          "xp": 611,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5531,
+          "attack": 2395,
+          "wave": 13
+        },
+        {
+          "level": 49,
+          "minute": 37.62,
+          "gold": 3085,
+          "region": -1,
+          "deaths": 4,
+          "xp": 165,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5790,
+          "attack": 1861,
+          "wave": 13
+        },
+        {
+          "level": 50,
+          "minute": 39.12,
+          "gold": 5736,
+          "region": 9,
+          "deaths": 4,
+          "xp": 1242,
+          "weapon": 18,
+          "armor": 17,
+          "hp": 5896,
+          "attack": 2563,
+          "wave": 14
+        },
+        {
+          "level": 51,
+          "minute": 40.64,
+          "gold": 3642,
+          "region": -1,
+          "deaths": 5,
+          "xp": 317,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6142,
+          "attack": 1966,
+          "wave": 14
+        },
+        {
+          "level": 52,
+          "minute": 42.37,
+          "gold": 10646,
+          "region": 9,
+          "deaths": 6,
+          "xp": 5053,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6251,
+          "attack": 2659,
+          "wave": 15
+        },
+        {
+          "level": 53,
+          "minute": 44.02,
+          "gold": 1071,
+          "region": 10,
+          "deaths": 7,
+          "xp": 124,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6526,
+          "attack": 2750,
+          "wave": 16
+        },
+        {
+          "level": 54,
+          "minute": 45.3,
+          "gold": 5717,
+          "region": 10,
+          "deaths": 7,
+          "xp": 680,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6638,
+          "attack": 2848,
+          "wave": 16
+        },
+        {
+          "level": 55,
+          "minute": 46.96,
+          "gold": 8154,
+          "region": -1,
+          "deaths": 8,
+          "xp": 0,
+          "weapon": 18,
+          "armor": 18,
+          "hp": 6750,
+          "attack": 2172,
+          "wave": 16
+        }
+      ],
+      "visits": [
+        {
+          "region": 0,
+          "level": 5,
+          "minute": 2.16,
+          "seconds": 73.4,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.29,
+          "bossSpawnTime": 130.4499999999954,
+          "bossFightSeconds": 40.9
+        },
+        {
+          "region": 1,
+          "level": 8,
+          "minute": 3.6,
+          "seconds": 60.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.3,
+          "bossSpawnTime": 200.95000000001144,
+          "bossFightSeconds": 30.1
+        },
+        {
+          "region": 2,
+          "level": 11,
+          "minute": 4.83,
+          "seconds": 58.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.33,
+          "bossSpawnTime": 264.35000000002583,
+          "bossFightSeconds": 29.8
+        },
+        {
+          "region": 3,
+          "level": 14,
+          "minute": 6.45,
+          "seconds": 59.3,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.39,
+          "bossSpawnTime": 349.0000000000451,
+          "bossFightSeconds": 29.4
+        },
+        {
+          "region": 3,
+          "level": 16,
+          "minute": 7.65,
+          "seconds": 45,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.32,
+          "bossSpawnTime": 408.25000000005855,
+          "bossFightSeconds": 16
+        },
+        {
+          "region": 4,
+          "level": 18,
+          "minute": 8.62,
+          "seconds": 38.9,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.39,
+          "bossSpawnTime": 445.8500000000671,
+          "bossFightSeconds": 17.9
+        },
+        {
+          "region": 4,
+          "level": 20,
+          "minute": 9.93,
+          "seconds": 42.3,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.33,
+          "bossSpawnTime": 509.85000000008165,
+          "bossFightSeconds": 19.1
+        },
+        {
+          "region": 4,
+          "level": 22,
+          "minute": 10.83,
+          "seconds": 34.9,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.29,
+          "bossSpawnTime": 551.9500000000457,
+          "bossFightSeconds": 11.9
+        },
+        {
+          "region": 5,
+          "level": 23,
+          "minute": 11.62,
+          "seconds": 57.3,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.41,
+          "bossSpawnTime": 597.7000000000041,
+          "bossFightSeconds": 23.9
+        },
+        {
+          "region": 5,
+          "level": 25,
+          "minute": 13.36,
+          "seconds": 33.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.37,
+          "bossSpawnTime": 672.3999999999362,
+          "bossFightSeconds": 12.6
+        },
+        {
+          "region": 5,
+          "level": 26,
+          "minute": 14.12,
+          "seconds": 37.4,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.34,
+          "bossSpawnTime": 709.7499999999022,
+          "bossFightSeconds": 12.6
+        },
+        {
+          "region": 6,
+          "level": 28,
+          "minute": 14.94,
+          "seconds": 41.4,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.5,
+          "bossSpawnTime": 743.4999999998715,
+          "bossFightSeconds": 20.3
+        },
+        {
+          "region": 5,
+          "level": 29,
+          "minute": 16.29,
+          "seconds": 37.7,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.3,
+          "bossSpawnTime": 811.19999999981,
+          "bossFightSeconds": 12.6
+        },
+        {
+          "region": 6,
+          "level": 30,
+          "minute": 17.11,
+          "seconds": 33.8,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.47,
+          "bossSpawnTime": 847.0999999997773,
+          "bossFightSeconds": 10.6
+        },
+        {
+          "region": 6,
+          "level": 31,
+          "minute": 17.88,
+          "seconds": 37.5,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.47,
+          "bossSpawnTime": 882.8999999997448,
+          "bossFightSeconds": 12.3
+        },
+        {
+          "region": 7,
+          "level": 33,
+          "minute": 19.21,
+          "seconds": 41.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.6,
+          "bossSpawnTime": 947.2499999996862,
+          "bossFightSeconds": 15
+        },
+        {
+          "region": 6,
+          "level": 34,
+          "minute": 20.11,
+          "seconds": 36.3,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.37,
+          "bossSpawnTime": 987.7999999996493,
+          "bossFightSeconds": 10.8
+        },
+        {
+          "region": 6,
+          "level": 34,
+          "minute": 20.94,
+          "seconds": 37.5,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.42,
+          "bossSpawnTime": 1023.9499999996165,
+          "bossFightSeconds": 13.8
+        },
+        {
+          "region": 7,
+          "level": 36,
+          "minute": 22.43,
+          "seconds": 33.9,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.54,
+          "bossSpawnTime": 1095.7999999995511,
+          "bossFightSeconds": 10.8
+        },
+        {
+          "region": 7,
+          "level": 37,
+          "minute": 23.19,
+          "seconds": 32.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.53,
+          "bossSpawnTime": 1127.3999999995224,
+          "bossFightSeconds": 11.8
+        },
+        {
+          "region": 7,
+          "level": 37,
+          "minute": 23.98,
+          "seconds": 39.2,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.6,
+          "bossSpawnTime": 1164.6999999994885,
+          "bossFightSeconds": 16.3
+        },
+        {
+          "region": 8,
+          "level": 38,
+          "minute": 25.39,
+          "seconds": 45.7,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.82,
+          "bossSpawnTime": 1235.7999999994238,
+          "bossFightSeconds": 19.5
+        },
+        {
+          "region": 7,
+          "level": 39,
+          "minute": 26.38,
+          "seconds": 36.5,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.49,
+          "bossSpawnTime": 1282.3999999993814,
+          "bossFightSeconds": 10.8
+        },
+        {
+          "region": 8,
+          "level": 40,
+          "minute": 27.19,
+          "seconds": 48.7,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 0.86,
+          "bossSpawnTime": 1320.0999999993471,
+          "bossFightSeconds": 21.8
+        },
+        {
+          "region": 8,
+          "level": 42,
+          "minute": 28.77,
+          "seconds": 33.8,
+          "result": "death",
+          "prepared": true,
+          "bossBurstFraction": 0.71,
+          "bossSpawnTime": 1392.1499999992816
+        },
+        {
+          "region": 8,
+          "level": 42,
+          "minute": 29.53,
+          "seconds": 38.4,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.69,
+          "bossSpawnTime": 1431.349999999246,
+          "bossFightSeconds": 12
+        },
+        {
+          "region": 9,
+          "level": 43,
+          "minute": 30.37,
+          "seconds": 46.1,
+          "result": "death",
+          "prepared": false,
+          "bossBurstFraction": 1.22,
+          "bossSpawnTime": 1466.7499999992137
+        },
+        {
+          "region": 8,
+          "level": 44,
+          "minute": 32.03,
+          "seconds": 35.2,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.6,
+          "bossSpawnTime": 1548.899999999139,
+          "bossFightSeconds": 12
+        },
+        {
+          "region": 9,
+          "level": 45,
+          "minute": 32.82,
+          "seconds": 47.2,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.94,
+          "bossSpawnTime": 1586.9999999991044,
+          "bossFightSeconds": 21.2
+        },
+        {
+          "region": 9,
+          "level": 46,
+          "minute": 33.8,
+          "seconds": 30.8,
+          "result": "death",
+          "prepared": false,
+          "bossBurstFraction": 1.02,
+          "bossSpawnTime": 1634.9999999990607
+        },
+        {
+          "region": 9,
+          "level": 46,
+          "minute": 35.08,
+          "seconds": 40.1,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.87,
+          "bossSpawnTime": 1691.949999999009,
+          "bossFightSeconds": 15.9
+        },
+        {
+          "region": 9,
+          "level": 47,
+          "minute": 35.95,
+          "seconds": 35.7,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.85,
+          "bossSpawnTime": 1727.6499999989765,
+          "bossFightSeconds": 15.9
+        },
+        {
+          "region": 10,
+          "level": 48,
+          "minute": 36.77,
+          "seconds": 26.9,
+          "result": "death",
+          "prepared": false,
+          "bossBurstFraction": 1.47,
+          "bossSpawnTime": 1768.1499999989396
+        },
+        {
+          "region": 9,
+          "level": 49,
+          "minute": 37.97,
+          "seconds": 42.1,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.8,
+          "bossSpawnTime": 1824.5499999988883,
+          "bossFightSeconds": 17.5
+        },
+        {
+          "region": 9,
+          "level": 49,
+          "minute": 38.89,
+          "seconds": 34.4,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.8,
+          "bossSpawnTime": 1860.8999999988553,
+          "bossFightSeconds": 13.7
+        },
+        {
+          "region": 10,
+          "level": 50,
+          "minute": 39.66,
+          "seconds": 34.2,
+          "result": "death",
+          "prepared": false,
+          "bossBurstFraction": 1.29,
+          "bossSpawnTime": 1903.5999999988164
+        },
+        {
+          "region": 10,
+          "level": 51,
+          "minute": 41.14,
+          "seconds": 27.6,
+          "result": "death",
+          "prepared": true,
+          "bossBurstFraction": 1.12,
+          "bossSpawnTime": 1972.7499999987535
+        },
+        {
+          "region": 9,
+          "level": 51,
+          "minute": 41.8,
+          "seconds": 34.2,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 0.7,
+          "bossSpawnTime": 1998.0999999987305,
+          "bossFightSeconds": 12.9
+        },
+        {
+          "region": 10,
+          "level": 52,
+          "minute": 42.57,
+          "seconds": 37.5,
+          "result": "death",
+          "prepared": false,
+          "bossBurstFraction": 1.21,
+          "bossSpawnTime": 2034.5999999986973
+        },
+        {
+          "region": 10,
+          "level": 52,
+          "minute": 43.91,
+          "seconds": 52.6,
+          "result": "boss",
+          "prepared": true,
+          "bossBurstFraction": 1.07,
+          "bossSpawnTime": 2100.1499999988746,
+          "bossFightSeconds": 27.1
+        },
+        {
+          "region": 10,
+          "level": 53,
+          "minute": 44.99,
+          "seconds": 30.2,
+          "result": "death",
+          "prepared": true,
+          "bossBurstFraction": 1.05,
+          "bossSpawnTime": 2153.349999999068
+        },
+        {
+          "region": 10,
+          "level": 54,
+          "minute": 45.69,
+          "seconds": 55.8,
+          "result": "boss",
+          "prepared": false,
+          "bossBurstFraction": 1.17,
+          "bossSpawnTime": 2184.4499999991813,
+          "bossFightSeconds": 28.7
+        }
+      ],
+      "minHp": 0.022608123265336382,
+      "garrisonDamageShare": 0.44,
+      "healing": 22407,
+      "damageTaken": 100083,
+      "snapshot": {
+        "endless": {
+          "bestWave": 0,
+          "bestDanger": 0,
+          "mastery": 0,
+          "shards": 0,
+          "rewards": {
+            "gold": 0,
+            "wood": 0,
+            "iron": 0,
+            "crystal": 0,
+            "shards": 0,
+            "rareDrops": 0
+          }
+        },
+        "version": 1,
+        "level": 55,
+        "xp": 0,
+        "gold": 8154,
+        "supplies": 0,
+        "materials": {
+          "wood": 1434,
+          "iron": 1095,
+          "crystal": 863
+        },
+        "equipment": {
+          "weapon": 18,
+          "armor": 18,
+          "charm": 18
+        },
+        "bases": [
+          {
+            "name": "緑風の野営地",
+            "upgrades": {
+              "attack": 18,
+              "speed": 12,
+              "range": 8,
+              "health": 17,
+              "move": 8,
+              "soldiers": 10,
+              "training": 15,
+              "wall": 15,
+              "tower": 8,
+              "cannon": 8,
+              "healer": 8,
+              "storage": 8,
+              "forge": 12,
+              "base": 0
+            },
+            "hp": 3500,
+            "wave": 16
+          }
+        ],
+        "activeBase": 0,
+        "discoveries": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "bosses": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "camps": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "visited": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "expeditionUnlocked": true,
+        "kills": 1367,
+        "elapsed": 2228.649999999342,
+        "nextRaid": 2657.449999999083,
+        "raidPending": false,
+        "raids": 0,
+        "raidTime": 75,
+        "skill": 8,
+        "settings": {
+          "particles": true,
+          "shake": true,
+          "sfxVolume": 0.55,
+          "sfxMuted": false
+        },
+        "completed": true
+      }
+    }
+  ]
+}

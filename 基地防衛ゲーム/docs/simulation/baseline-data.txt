@@ -1,0 +1,68 @@
+export type Resource = 'wood' | 'iron' | 'crystal';
+export type EnemyKind = 'melee' | 'runner' | 'tank' | 'ranged' | 'swarm' | 'bomber' | 'siege' | 'hunter' | 'elite' | 'boss';
+export type UpgradeId = 'attack' | 'speed' | 'range' | 'health' | 'move' | 'soldiers' | 'training' | 'wall' | 'tower' | 'cannon' | 'healer' | 'storage' | 'forge' | 'base';
+export const BALANCE = {
+  maxLevel: 55, world: 1600, home: 800, autoSaveSeconds: 8,
+  baseHealth: 650, baseHealthPerLevel: 260, wallHealth: 190,
+  heroHealth: 120, heroHealthPerLevel: 19, heroAttack: 18, heroAttackPerLevel: 3.8,
+  heroSpeed: 172, heroRange: 245, heroInterval: .65, enemyHealthGrowth: 1.075, enemyDamageGrowth: 1.105,
+  raidInterval: 300, campRaidDelay: 90, raidCountdown: 75, expeditionKillsForBoss: 14,
+  dashCooldown: 3.2, dashDuration: .2, dashInvulnerability: .35, skillCooldown: 9, skillRadius: 185, skillDamage: 3.8,
+  healCooldown: 24, potionHeal: .48, deathGoldLoss: .08, waveReward: 65,
+  equipmentBaseCost: 85, equipmentGrowth: 1.42, equipmentMax: 18,
+  xpBase: 50, xpLinear: 20, xpQuadratic: 1.7,
+  upgrades: { attack: .12, health: .15, speed: .12, range: 18, move: .05, forge: .08 },
+  equipment: { weapon: .16, armor: .13, critBase: .06, charmCrit: .018, charmXp: .035, critDamage: 1.8 },
+  defense: { attack: 12, attackPerLevel: 2.5, training: .25, interval: .95, soldierRange: 290, towerRange: 440, cannonDamage: 2.7, cannonRadius: 80, splashDamage: .65, eliteResistance: .42, storage: .08, healing: .009, repair: .06, resting: .09 },
+  skillUpgrade: { max: 8, baseCost: 100, crystalFrom: 3, crystalPerLevel: 3, damage: .5, cooldown: .035 },
+  secondBase: { gold: 600, iron: 35, discount: .72 },
+  loot: { xpGrowth: .21, goldGrowth: .17, resourceBase: 8, resourceGrowth: 1.1, chestGold: 60, chestGoldGrowth: 24, eventXp: 60, eventXpGrowth: 15, bossMaterial: 20 },
+  drop: { material: .55, equipment: .065, crystal: .14 },
+};
+export const LEVELS = Array.from({ length: BALANCE.maxLevel }, (_, i) => ({ level: i + 1, xp: i === BALANCE.maxLevel - 1 ? 0 : Math.round(BALANCE.xpBase + i * BALANCE.xpLinear + i * i * BALANCE.xpQuadratic), hp: BALANCE.heroHealth + i * BALANCE.heroHealthPerLevel, attack: +(BALANCE.heroAttack + i * BALANCE.heroAttackPerLevel).toFixed(1) }));
+export const RESOURCE_NAMES: Record<Resource, string> = { wood: '木材', iron: '鉄鉱石', crystal: '結晶' };
+export const ENEMIES: Record<EnemyKind, { name: string; hp: number; attack: number; speed: number; radius: number; color: string; xp: number; gold: number }> = {
+  melee: { name: '徘徊者', hp: 32, attack: 8, speed: 49, radius: 13, color: '#ad7970', xp: 11, gold: 7 },
+  runner: { name: '疾走獣', hp: 22, attack: 7, speed: 104, radius: 10, color: '#d6b975', xp: 12, gold: 8 },
+  tank: { name: '重装兵', hp: 115, attack: 13, speed: 29, radius: 21, color: '#8c9694', xp: 27, gold: 16 },
+  ranged: { name: '射手', hp: 32, attack: 11, speed: 42, radius: 12, color: '#ba92b3', xp: 19, gold: 11 },
+  swarm: { name: '小鬼', hp: 13, attack: 4, speed: 70, radius: 8, color: '#c7aa77', xp: 5, gold: 4 },
+  bomber: { name: '爆裂胞子', hp: 25, attack: 31, speed: 74, radius: 13, color: '#ea995f', xp: 18, gold: 12 },
+  siege: { name: '破城獣', hp: 125, attack: 26, speed: 35, radius: 21, color: '#99735e', xp: 30, gold: 20 },
+  hunter: { name: '追跡者', hp: 49, attack: 16, speed: 87, radius: 13, color: '#c58183', xp: 23, gold: 15 },
+  elite: { name: 'エリート', hp: 220, attack: 22, speed: 57, radius: 23, color: '#c9a3dd', xp: 80, gold: 55 },
+  boss: { name: '地域の主', hp: 760, attack: 32, speed: 34, radius: 35, color: '#d88879', xp: 260, gold: 150 },
+};
+export interface Region { id: number; name: string; sub: string; min: number; max: number; color: string; ground: string; resource: Resource; enemies: EnemyKind[]; boss: string; event: string; unlock: string; x: number; y: number }
+export const REGIONS: Region[] = [
+  { id: 0, name: 'はじまりの平原', sub: 'THE GREENFIELDS', min: 1, max: 5, color: '#8fb37b', ground: '#7e9562', resource: 'wood', enemies: ['melee', 'swarm', 'runner'], boss: '草原の大牙', event: '道に迷った生存者', unlock: '兵士の雇用枠 +2', x: 47, y: 80 },
+  { id: 1, name: 'ささやきの森', sub: 'WHISPERING WOODS', min: 4, max: 10, color: '#6d9d81', ground: '#527957', resource: 'wood', enemies: ['swarm', 'runner', 'ranged'], boss: '古木の守り手', event: '弓塔の設計図', unlock: '弓塔を建設可能', x: 25, y: 67 },
+  { id: 2, name: '黄昏の廃村', sub: 'FORGOTTEN VILLAGE', min: 8, max: 15, color: '#c5ae79', ground: '#8d8865', resource: 'wood', enemies: ['melee', 'hunter', 'ranged'], boss: '忘れられた騎士', event: '取り残された救護隊', unlock: '回復施設・雇用枠 +3', x: 68, y: 69 },
+  { id: 3, name: '鉄脈の鉱山', sub: 'IRONVEIN MINES', min: 12, max: 20, color: '#9aabb5', ground: '#717a6b', resource: 'iron', enemies: ['tank', 'bomber', 'melee'], boss: '鋼鉄の巨人', event: '閉ざされた採掘坑', unlock: '鉄・鍛冶屋・上位装備', x: 16, y: 48 },
+  { id: 4, name: '霧隠れの湿地', sub: 'MISTFALL MARSH', min: 18, max: 25, color: '#91aaa2', ground: '#577b70', resource: 'iron', enemies: ['bomber', 'swarm', 'hunter'], boss: '沼底の捕食者', event: '補給倉庫の設計図', unlock: '倉庫の強化効率上昇', x: 48, y: 55 },
+  { id: 5, name: '赤砂の荒野', sub: 'CRIMSON WASTES', min: 23, max: 30, color: '#cb9b77', ground: '#a18664', resource: 'iron', enemies: ['siege', 'runner', 'ranged'], boss: '砂塵の暴君', event: '野営地に適した高台', unlock: '第二拠点の建設権', x: 82, y: 49 },
+  { id: 6, name: '風鳴りの山岳', sub: 'HOWLING PEAKS', min: 28, max: 35, color: '#a5b5a2', ground: '#7b8a78', resource: 'crystal', enemies: ['tank', 'hunter', 'ranged'], boss: '山嶺の翼王', event: '砲撃陣地の残骸', unlock: '砲台を建設可能', x: 29, y: 35 },
+  { id: 7, name: '白夜の雪原', sub: 'FROSTBOUND REACH', min: 33, max: 40, color: '#c2d8d9', ground: '#abbdb7', resource: 'crystal', enemies: ['runner', 'tank', 'swarm'], boss: '白夜の巨獣', event: '氷に眠る救援隊', unlock: '精鋭兵・雇用枠 +4', x: 12, y: 18 },
+  { id: 8, name: '静寂の廃都市', sub: 'SILENT CITADEL', min: 38, max: 45, color: '#b2acb8', ground: '#777f79', resource: 'iron', enemies: ['ranged', 'siege', 'hunter'], boss: '機械仕掛けの番人', event: '古代の武器工房', unlock: '鍛造装備の上限解放', x: 61, y: 32 },
+  { id: 9, name: '瘴気の汚染地帯', sub: 'THE BLIGHT', min: 43, max: 50, color: '#b0b77f', ground: '#758260', resource: 'crystal', enemies: ['bomber', 'swarm', 'hunter', 'tank'], boss: '瘴気の母体', event: '浄化結晶の鉱床', unlock: '結晶強化・回復量上昇', x: 83, y: 22 },
+  { id: 10, name: '終焉の要塞', sub: 'THE LAST HORIZON', min: 48, max: 55, color: '#d19a8b', ground: '#776d63', resource: 'crystal', enemies: ['siege', 'ranged', 'hunter', 'tank'], boss: '地平を喰らう王', event: '決戦前の補給所', unlock: '最終決戦・遠征の完遂', x: 48, y: 10 },
+];
+export const ROUTES = [[0, 1], [0, 2], [1, 3], [1, 4], [2, 4], [2, 5], [3, 6], [4, 6], [4, 8], [5, 8], [6, 7], [6, 8], [7, 10], [8, 9], [9, 10], [8, 10]];
+export interface Upgrade { id: UpgradeId; name: string; desc: string; cost: number; growth: number; max: number; icon: string; material?: Resource; unlock?: number }
+export const UPGRADES: Upgrade[] = [
+  { id: 'attack', name: '攻撃力', desc: '与えるダメージ +12%', cost: 45, growth: 1.35, max: 20, icon: 'sword' },
+  { id: 'speed', name: '攻撃速度', desc: '攻撃間隔を短縮', cost: 60, growth: 1.4, max: 12, icon: 'zap' },
+  { id: 'range', name: '射程', desc: '攻撃範囲 +18', cost: 65, growth: 1.45, max: 10, icon: 'target' },
+  { id: 'health', name: '最大HP', desc: '最大HP +15%', cost: 45, growth: 1.35, max: 20, icon: 'heart' },
+  { id: 'move', name: '移動速度', desc: '移動速度 +5%', cost: 65, growth: 1.5, max: 8, icon: 'wind' },
+  { id: 'soldiers', name: '兵士を雇用', desc: '拠点を自動で防衛する仲間', cost: 85, growth: 1.35, max: 12, icon: 'users' },
+  { id: 'training', name: '兵士訓練', desc: '兵士・防衛施設の威力 +25%', cost: 80, growth: 1.36, max: 20, icon: 'shield' },
+  { id: 'wall', name: '防壁', desc: '拠点の耐久力 +190', cost: 70, growth: 1.35, max: 20, icon: 'wall', material: 'wood' },
+  { id: 'tower', name: '弓塔', desc: '遠距離から敵を迎撃', cost: 130, growth: 1.45, max: 8, icon: 'tower', material: 'wood', unlock: 1 },
+  { id: 'cannon', name: '砲台', desc: '爆風で敵の集団を攻撃', cost: 280, growth: 1.5, max: 8, icon: 'crosshair', material: 'iron', unlock: 6 },
+  { id: 'healer', name: '回復施設', desc: '拠点付近でHPを継続回復', cost: 110, growth: 1.4, max: 10, icon: 'heart', material: 'wood', unlock: 2 },
+  { id: 'storage', name: '倉庫', desc: 'コインと素材の獲得量 +8%', cost: 95, growth: 1.4, max: 10, icon: 'box', material: 'wood' },
+  { id: 'forge', name: '鍛冶屋', desc: '主人公の与ダメージ +8%', cost: 150, growth: 1.4, max: 12, icon: 'hammer', material: 'iron', unlock: 3 },
+  { id: 'base', name: '拠点レベル', desc: '耐久力 +260・遠征時の回復強化', cost: 120, growth: 1.48, max: 15, icon: 'home', material: 'wood' },
+];
+export function enemyStats(kind: EnemyKind, level: number) { const e = ENEMIES[kind]; return { ...e, hp: Math.round(e.hp * BALANCE.enemyHealthGrowth ** (level - 1)), attack: e.attack * BALANCE.enemyDamageGrowth ** (level - 1), xp: Math.round(e.xp * (1 + level * BALANCE.loot.xpGrowth)), gold: Math.round(e.gold * (1 + level * BALANCE.loot.goldGrowth)) }; }

@@ -1,0 +1,39 @@
+{
+  "methodology": "Actual combat from balanced seed17 campaign clear. 50ms updates;150ms steering. Bought mastery only with earned gold/shards. No resource or damage injection. Goals: defense Wave10 / expedition danger5;30 minute cutoff.",
+  "results": [
+    {
+      "mode": "defense",
+      "minutes": 7.79,
+      "deaths": 0,
+      "bestWave": 10,
+      "bestDanger": 0,
+      "mastery": 9,
+      "shards": 41,
+      "rewards": {
+        "gold": 87056,
+        "wood": 3354,
+        "iron": 350,
+        "crystal": 259,
+        "shards": 235,
+        "rareDrops": 4
+      }
+    },
+    {
+      "mode": "expedition",
+      "minutes": 4.37,
+      "deaths": 0,
+      "bestWave": 0,
+      "bestDanger": 5,
+      "mastery": 12,
+      "shards": 165,
+      "rewards": {
+        "gold": 142635,
+        "wood": 0,
+        "iron": 3153,
+        "crystal": 953,
+        "shards": 447,
+        "rareDrops": 12
+      }
+    }
+  ]
+}
