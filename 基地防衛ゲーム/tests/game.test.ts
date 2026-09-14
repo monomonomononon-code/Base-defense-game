@@ -120,17 +120,22 @@ test('Lv55 final boss can be defeated with real projectiles, cooldowns, and kiti
   const s = newSave(); s.level = 55; s.expeditionUnlocked = true; s.nextRaid = 1e9;
   s.equipment = { weapon: 16, armor: 16, charm: 12 }; Object.assign(s.bases[0].upgrades, { attack: 12, speed: 8, health: 16, forge: 8, move: 4 }); s.skill = 6;
   const g = new Game(s, () => {}, () => {}); g.travel(10); g.enemies = []; g.spawnClock = 1e9; g.bossSpawned = true;
-  g.hero.x = 800; g.hero.y = 850; g.spawn('boss', { x: 800, y: 670 });
+  const clearing = g.expeditionMap!.nodes.boss;
+  g.hero.x = clearing.x; g.hero.y = clearing.y + 180; g.spawn('boss', { ...clearing });
   const original = Math.random; Math.random = () => .9;
   try {
     for (let n = 0; n < 2400 && !s.completed && g.mode === 'expedition'; n++) {
       const boss = g.enemies.find(e => e.kind === 'boss'); if (!boss) break;
       const dx = g.hero.x - boss.x, dy = g.hero.y - boss.y, length = Math.hypot(dx, dy); const radial = (180 - length) / 90;
       g.joystick = { x: -dy / length + dx / length * radial, y: dx / length + dy / length * radial };
+      // Steer back into the clearing when circling reaches the forest edge.
+      const edge=Math.hypot(g.hero.x-clearing.x,g.hero.y-clearing.y);
+      if(edge>260) {g.joystick.x+=(clearing.x-g.hero.x)/edge*2;g.joystick.y+=(clearing.y-g.hero.y)/edge*2;}
+      if(boss.warning>0 && boss.warning<.5) g.dash();
       if (length < BALANCE.skillRadius) g.skill(); if (g.hero.hp < g.stats.hp * .6) g.heal();
       g.update(.05);
     }
-    assert.ok(s.completed, 'fully simulated level-appropriate boss fight should be winnable'); assert.ok(g.hero.hp > 0);
+    assert.ok(s.completed, `fully simulated level-appropriate boss fight should be winnable: ${JSON.stringify({mode:g.mode,time:g.clock,hp:g.hero.hp,boss:g.enemies.find(e=>e.kind==='boss')?.hp})}`); assert.ok(g.hero.hp > 0);
   } finally { Math.random = original; }
 });
 

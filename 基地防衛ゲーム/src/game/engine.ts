@@ -2,14 +2,16 @@ import { ENDLESS, endlessUnlocked, endlessProfile, endlessStageForWave, endlessE
 import { BALANCE, ENEMIES, REGIONS, enemyStats, materialYield, type EnemyKind, type Resource } from './data';
 import { baseMaxHp, currentBase, gainXp, heroStats, newSave, SAVE_KEY, type Save } from './state';
 import { sfx } from './audio';
+import { createExpeditionMap, distanceToRoad, patrolPosition, EXPLORATION, moveOnMap, clearPath, routeWaypoints, type ExpeditionMap } from './expeditionMap';
 export interface Vec { x: number; y: number }
-export interface Enemy extends Vec { id: number; kind: EnemyKind; level: number; hp: number; maxHp: number; cd: number; phase: number; warning: number; target: Vec; hit: number; guard?: string }
+export interface Enemy extends Vec { id: number; kind: EnemyKind; level: number; hp: number; maxHp: number; cd: number; phase: number; warning: number; target: Vec; hit: number; guard?: string; patrol?: boolean; route?: Vec[]; navClock?: number; sight?: boolean }
 export interface Bullet extends Vec { vx: number; vy: number; damage: number; life: number; enemy: boolean; hero: boolean; splash: number; color: string }
 export interface Effect extends Vec { text?: string; color: string; life: number; max: number; radius: number }
 export interface Point extends Vec { id: string; type: 'resource' | 'chest' | 'event' | 'camp' | 'portal'; done: boolean; label: string }
 export interface Decor extends Vec { type: 'tree' | 'rock' | 'grass' | 'flower'; size: number; variant: number }
 export type ViewMode = 'base' | 'expedition';
 export class Game {
+  expeditionMap: ExpeditionMap | null = null; private mapVisits = 0;
   endless: EndlessMode | null = null; endlessRound = 1; intermission = 0; worldSeed = 0;
   save: Save; mode: ViewMode = 'base'; region = 0; prepared = false;
   hero = { x: 800, y: 940, hp: 120, cd: 0, dash: 0, skill: 0, potion: 0, invulnerable: 0, dashTime: 0, facing: 1 };
@@ -64,7 +66,8 @@ export class Game {
   persist() { try { localStorage.setItem(SAVE_KEY, JSON.stringify(this.save)); this.savedAt = new Date().toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }); this.saveError = false; } catch { this.saveError = true; } this.onChange(); }
   reset() { this.endless = null; this.intermission = 0; this.save = newSave(); this.mode = 'base'; this.region = 0; this.waveActive = false; this.enemies = []; this.bullets = []; this.effects = []; this.hero.x = 800; this.hero.y = 940; this.hero.hp = this.stats.hp; this.hero.cd = this.hero.dash = this.hero.skill = this.hero.potion = this.hero.invulnerable = this.hero.dashTime = 0; this.makeWorld(); this.persist(); this.emit('新しい旅が始まりました'); }
   makeWorld() {
-    let seed = this.endless ? this.worldSeed + this.endlessRound * 7919 : (this.mode === 'base' ? 781 : 1451 + this.region * 951);
+    let seed = this.mode === 'base' ? 781 : this.worldSeed + this.region * 951;
+    this.expeditionMap = this.mode === 'expedition' ? createExpeditionMap(seed, this.region) : null;
     const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
     this.decor = Array.from({ length: 220 }, () => ({ x: random() * 1600, y: random() * 1600, type: (['tree', 'rock', 'grass', 'grass', 'flower'] as const)[Math.floor(random() * 5)], size: 12 + random() * 22, variant: random() }));
     this.decor = this.decor.filter(d => this.mode !== 'base' || distance(d, { x: 800, y: 800 }) > 230);
@@ -76,17 +79,21 @@ export class Game {
       { id: 'event', type: 'event', x: 1080, y: 340, label: REGIONS[this.region].event, done: false },
       { id: 'camp', type: 'camp', x: 1280, y: 920, label: '敵の前哨地を破壊', done: false },
     ];
-    if (this.endless === 'expedition') for (const p of this.points) if (p.type !== 'portal') { p.x = 180 + random() * 1240; p.y = 180 + random() * 880; if (p.type === 'event') p.label = '古代の補給庫を調査'; }
+    if (this.expeditionMap) {
+      for (const p of this.points) { Object.assign(p, this.expeditionMap.nodes[p.id as keyof ExpeditionMap['nodes']]); if (this.endless && p.type === 'event') p.label = '古代の補給庫を調査'; }
+      this.decor = this.decor.filter(d => distanceToRoad(d, this.expeditionMap!) > 115 && Object.values(this.expeditionMap!.nodes).every(p=>distance(p,d)>140));
+    }
   }
   travel(region: number, endlessTravel = false) {
     if ((this.endless && !endlessTravel) || !this.save.expeditionUnlocked || this.waveActive || this.save.raidPending || !REGIONS[region]) return false;
     this.prepared = this.save.supplies > 0; if (this.prepared) this.save.supplies--;
     this.mode = 'expedition'; this.region = region; this.hero.x = 800; this.hero.y = 1260; this.hero.invulnerable = 2;
+    if (!endlessTravel) this.worldSeed = 1451 + ++this.mapVisits + Math.floor(this.save.elapsed * 10);
     this.enemies = []; this.bullets = []; this.effects = []; this.expeditionKills = 0; this.bossSpawned = false; this.bossDefeated = false; this.spawnClock = 1;
     if (!this.endless && !this.save.visited.includes(region)) this.save.visited.push(region);
     this.makeWorld();
     for (const p of this.points.filter(p => ['event', 'chest', 'camp'].includes(p.type))) this.spawn('elite', { x: p.x + 50, y: p.y + 25 }, p.id);
-    this.persist(); this.emit(`${REGIONS[region].name}へ到着。${this.prepared ? '遠征補給を使用しました' : '補給なしで出発しました'}。${this.endless ? '資源と発見の配置はミニマップで確認できます' : '道標は南、発見は北東です'}`); return true;
+    this.persist(); this.emit(`${REGIONS[region].name}へ到着。${this.prepared ? '遠征補給を使用しました' : '補給なしで出発しました'}。赤は短い危険路、緑は資源の回り道、金は宝箱への道です`); return true;
   }
   returnHome(forced = false) {
     if (this.endless) { this.leaveEndless(); return; }
@@ -108,16 +115,18 @@ export class Game {
     const table: EnemyKind[] = this.mode === 'base' ? (this.save.expeditionUnlocked ? ['melee', 'runner', 'tank', 'ranged', 'siege', 'hunter', 'bomber', 'swarm'] : ['melee', 'melee', 'swarm', 'runner']) : r.enemies;
     kind ??= table[Math.floor(Math.random() * table.length)];
     const angle = Math.random() * Math.PI * 2; const center = this.mode === 'base' ? { x: 800, y: 800 } : this.hero;
+    const patrol = !at && kind !== 'boss' && this.mode === 'expedition' && !!this.expeditionMap;
+    if (patrol) { at = patrolPosition(this.expeditionMap!, this.hero, this.enemies, angle / (Math.PI * 2)); if (!at) return; }
     at ??= { x: clamp(center.x + Math.cos(angle) * 560, 70, 1530), y: clamp(center.y + Math.sin(angle) * 560, 70, 1530) };
     const lv = this.endless ? this.endlessProfile.level : kind === 'boss' && this.mode === 'expedition' ? r.max : level; const stats = this.enemyPower(kind, lv);
-    this.enemies.push({ ...at, kind, level: lv, id: this.id++, hp: stats.hp, maxHp: stats.hp, cd: 1.2, phase: 3, warning: 0, target: { ...at }, hit: 0, guard });
+    this.enemies.push({ ...at, kind, level: lv, id: this.id++, hp: stats.hp, maxHp: stats.hp, cd: 1.2, phase: 3, warning: 0, target: { ...at }, hit: 0, guard, patrol: patrol || (kind === 'boss' && this.mode === 'expedition') });
     if (kind === 'boss') sfx.play('bossAppear');
   }
   dash() { if (this.paused || this.overlay || this.hero.dash > 0) return; this.hero.dash = BALANCE.dashCooldown; this.hero.dashTime = BALANCE.dashDuration; this.hero.invulnerable = BALANCE.dashInvulnerability; this.ring(this.hero, '#e5f4b6', 50); }
   skill() {
     if (this.paused || this.overlay || this.hero.skill > 0) return;
     this.hero.skill = BALANCE.skillCooldown / (1 + this.save.skill * BALANCE.skillUpgrade.cooldown); this.ring(this.hero, '#d4f798', BALANCE.skillRadius, .6);
-    for (const e of this.enemies) if (distance(e, this.hero) < BALANCE.skillRadius + ENEMIES[e.kind].radius) { this.damage(e, this.stats.attack * (BALANCE.skillDamage + this.save.skill * BALANCE.skillUpgrade.damage), true); const a = Math.atan2(e.y - this.hero.y, e.x - this.hero.x); e.x = clamp(e.x + Math.cos(a) * 50, 25, 1575); e.y = clamp(e.y + Math.sin(a) * 50, 25, 1575); }
+    for (const e of this.enemies) if (distance(e, this.hero) < BALANCE.skillRadius + ENEMIES[e.kind].radius && (!this.expeditionMap || clearPath(this.hero,e,this.expeditionMap,2))) { this.damage(e, this.stats.attack * (BALANCE.skillDamage + this.save.skill * BALANCE.skillUpgrade.damage), true); const a = Math.atan2(e.y - this.hero.y, e.x - this.hero.x); const moved=this.expeditionMap ? moveOnMap(e,Math.cos(a)*50,Math.sin(a)*50,this.expeditionMap) : {x:clamp(e.x+Math.cos(a)*50,25,1575),y:clamp(e.y+Math.sin(a)*50,25,1575)};e.x=moved.x;e.y=moved.y; }
     if (this.save.settings.shake) this.shake = .14;
   }
   heal() { if (this.paused || this.overlay || this.hero.potion > 0 || this.hero.hp >= this.stats.hp) return; this.hero.potion = BALANCE.healCooldown * (1 - Math.min(BALANCE.progression.maxPotionReduction, this.base.upgrades.healer * BALANCE.progression.healerPotionReduction)); this.hero.hp = Math.min(this.stats.hp, this.hero.hp + this.stats.hp * (BALANCE.potionHeal + this.base.upgrades.healer * BALANCE.progression.healerPotionAmount + (this.save.discoveries.includes(9) ? .15 : 0))); this.ring(this.hero, '#8fe0b0', 65); this.float(this.hero, '回復', '#c1f4c3'); }
@@ -194,7 +203,8 @@ export class Game {
     let dy = (this.keys.has('s') || this.keys.has('arrowdown') ? 1 : 0) - (this.keys.has('w') || this.keys.has('arrowup') ? 1 : 0) + this.joystick.y;
     const length = Math.hypot(dx, dy); if (length > 0) { dx /= Math.max(1, length); dy /= Math.max(1, length); this.lastDirection = { x: dx, y: dy }; if (dx) this.hero.facing = Math.sign(dx); }
     if (this.hero.dashTime > 0) { dx = this.lastDirection.x * 3.7; dy = this.lastDirection.y * 3.7; }
-    this.hero.x = clamp(this.hero.x + dx * this.stats.speed * dt, 35, 1565); this.hero.y = clamp(this.hero.y + dy * this.stats.speed * dt, 35, 1565);
+    const movement=this.expeditionMap ? moveOnMap(this.hero,dx*this.stats.speed*dt,dy*this.stats.speed*dt,this.expeditionMap) : {x:clamp(this.hero.x+dx*this.stats.speed*dt,35,1565),y:clamp(this.hero.y+dy*this.stats.speed*dt,35,1565)};
+    this.hero.x=movement.x;this.hero.y=movement.y;
     this.hero.hp = Math.min(this.hero.hp, this.stats.hp);
     if (this.mode === 'expedition' && this.prepared) this.hero.hp = Math.min(this.stats.hp, this.hero.hp + this.stats.hp * this.base.upgrades.healer * BALANCE.progression.healerFieldRegen * dt);
     if (this.mode === 'base' && distance(this.hero, { x: 800, y: 800 }) < 210) { this.hero.hp = Math.min(this.stats.hp, this.hero.hp + this.stats.hp * dt * (this.waveActive ? this.base.upgrades.healer * BALANCE.defense.healing : BALANCE.defense.resting)); if (!this.waveActive) this.base.hp = Math.min(baseMaxHp(this.base), this.base.hp + baseMaxHp(this.base) * dt * BALANCE.defense.repair); }
@@ -226,32 +236,41 @@ export class Game {
     if (this.mode === 'expedition') {
       this.spawnClock -= dt;
       if (this.spawnClock <= 0 && !(this.endless && this.bossDefeated) && this.enemies.length < (this.endless ? Math.min(ENDLESS.liveEnemyLimit, this.endlessProfile.count) : 24)) { this.spawn(); if (Math.random() < .27) this.spawn('swarm'); this.spawnClock = this.endless ? this.endlessProfile.interval : 2.3; }
-      if (this.expeditionKills >= this.bossTarget && !this.bossSpawned) { this.bossSpawned = true; this.spawn('boss', { x: clamp(this.hero.x + 330, 100, 1500), y: clamp(this.hero.y - 280, 100, 1500) }); this.emit(`${REGIONS[this.region].boss}が出現！ 赤い予兆を回避してください`); }
+      if (this.expeditionKills >= this.bossTarget && !this.bossSpawned) { this.bossSpawned = true; this.spawn('boss', this.expeditionMap?.nodes.boss ?? { x: 800, y: 260 }); this.emit(`${REGIONS[this.region].boss}が北の広場に出現！ 赤い予兆を回避してください`); }
     }
-    const targets = this.enemies.filter(e => e.hp > 0 && distance(e, this.hero) < this.stats.range).sort((a, b) => distance(a, this.hero) - distance(b, this.hero));
+    const targets = this.hero.cd>0 ? [] : this.enemies.filter(e => e.hp > 0 && distance(e, this.hero) < this.stats.range && (!this.expeditionMap || clearPath(this.hero,e,this.expeditionMap,2))).sort((a, b) => distance(a, this.hero) - distance(b, this.hero));
     if (this.hero.cd <= 0 && targets[0]) { this.shoot(this.hero, targets[0], this.stats.attack, false, 0, true); sfx.play('attack'); this.hero.cd = this.stats.interval; this.hero.facing = targets[0].x >= this.hero.x ? 1 : -1; }
     if (this.mode === 'base') { this.allyClock -= dt; if (this.allyClock <= 0) { const d = BALANCE.defense; this.allyClock = d.interval; const u = this.base.upgrades; const strength = (this.endless ? masteryMultiplier(this.save) : 1) * (d.attack + this.save.level * d.attackPerLevel) * (1 + this.save.bases[0].upgrades.training * d.training); for (let i = 0; i < u.soldiers + u.tower + u.cannon; i++) { const pos = this.allyPosition(i); const target = this.enemies.filter(e => e.hp > 0 && distance(e, pos) < (i >= u.soldiers ? d.towerRange : d.soldierRange)).sort((a, b) => distance(a, pos) - distance(b, pos))[0]; if (target) this.shoot(pos, target, strength * (i >= u.soldiers + u.tower ? d.cannonDamage : 1), false, i >= u.soldiers + u.tower ? d.cannonRadius : 0); } } }
     for (const e of this.enemies) {
       if (e.hp <= 0) continue;
       const st = this.enemyPower(e.kind, e.level); e.cd -= dt; e.hit = Math.max(0, e.hit - dt);
       const toHero = this.mode === 'expedition' || ['hunter', 'boss', 'elite', 'bomber'].includes(e.kind) || (e.kind !== 'siege' && distance(e, this.hero) < 170);
-      const target = toHero ? this.hero : { x: 800, y: 800 }; const dist = distance(e, target); const a = Math.atan2(target.y - e.y, target.x - e.x);
+      const target = toHero ? this.hero : { x: 800, y: 800 }; const dist = distance(e, target); let a = Math.atan2(target.y - e.y, target.x - e.x);
       if (e.guard && distance(e, this.hero) > 360) continue;
+      if (e.patrol && e.hp === e.maxHp && distance(e, this.hero) > EXPLORATION.patrolRange) continue;
+      if (this.expeditionMap) {
+        e.navClock=(e.navClock??0)-dt;
+        if(e.navClock<=0) {e.sight=clearPath(e,target,this.expeditionMap);e.route=e.sight?[{x:target.x,y:target.y}]:routeWaypoints(e,target,this.expeditionMap);e.navClock=.6;}
+        while(e.route && e.route.length>1 && distance(e,e.route[0])<22)e.route.shift();
+        if(!e.sight && e.route?.length) a=Math.atan2(e.route[0].y-e.y,e.route[0].x-e.x);
+      }
       if (e.kind === 'boss' || e.kind === 'elite') {
         e.phase -= dt;
-        if (e.phase <= 0 && e.warning <= 0) { e.warning = 1.15; e.target = { x: this.hero.x, y: this.hero.y }; e.phase = e.kind === 'boss' ? 4.3 : 6; }
+        if (e.phase <= 0 && e.warning <= 0 && (!this.expeditionMap || e.sight)) { e.warning = 1.15; e.target = { x: this.hero.x, y: this.hero.y }; e.phase = e.kind === 'boss' ? 4.3 : 6; }
         if (e.warning > 0) { e.warning -= dt; if (e.warning <= 0) { this.ring(e.target, '#ee8b76', e.kind === 'boss' ? 115 : 75); if (distance(this.hero, e.target) < (e.kind === 'boss' ? 115 : 75)) this.hurt(st.attack * 2); if (e.kind === 'boss') for (let n = 0; n < 8; n++) this.shoot(e, { x: e.x + Math.cos(n * Math.PI / 4) * 100, y: e.y + Math.sin(n * Math.PI / 4) * 100 }, st.attack * .6, true); } continue; }
       }
       const stop = e.kind === 'ranged' ? 230 : toHero ? 25 : 65;
-      if (dist > stop) { e.x += Math.cos(a) * st.speed * dt; e.y += Math.sin(a) * st.speed * dt; }
-      if (dist <= stop + 12 && e.cd <= 0) {
+      if (dist > stop || (this.expeditionMap && !e.sight)) { const moved=this.expeditionMap ? moveOnMap(e,Math.cos(a)*st.speed*dt,Math.sin(a)*st.speed*dt,this.expeditionMap) : {x:e.x+Math.cos(a)*st.speed*dt,y:e.y+Math.sin(a)*st.speed*dt};e.x=moved.x;e.y=moved.y; }
+      if (dist <= stop + 12 && e.cd <= 0 && (!this.expeditionMap || clearPath(e,target,this.expeditionMap,2))) {
         e.cd = e.kind === 'ranged' ? 1.7 : 1.05;
         if (e.kind === 'ranged') this.shoot(e, target, st.attack, true);
         else { if (toHero) this.hurt(st.attack); else this.base.hp -= st.attack / ((1 + this.base.upgrades.base * BALANCE.progression.baseDamageReduction) * (this.endless ? masteryMultiplier(this.save) : 1)); if (e.kind === 'bomber') { this.ring(e, '#edaa6d', 65); this.damage(e, e.hp, true); } }
       }
     }
     for (const b of this.bullets) {
-      b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt;
+      const next={x:b.x+b.vx*dt,y:b.y+b.vy*dt};
+      if(this.expeditionMap && !clearPath(b,next,this.expeditionMap,2)){b.life=0;continue;}
+      b.x=next.x;b.y=next.y;b.life-=dt;
       if (b.enemy) { if (distance(b, this.hero) < 18) { this.hurt(b.damage); b.life = 0; } else if (this.mode === 'base' && distance(b, { x: 800, y: 800 }) < 50) { this.base.hp -= b.damage / ((1 + this.base.upgrades.base * BALANCE.progression.baseDamageReduction) * (this.endless ? masteryMultiplier(this.save) : 1)); b.life = 0; } }
       else { const e = this.enemies.find(e => e.hp > 0 && distance(e, b) < ENEMIES[e.kind].radius + 8); if (e) { this.damage(e, b.damage, b.hero); if (b.splash) { this.ring(b, '#e9bc77', b.splash); for (const other of this.enemies) if (other !== e && distance(other, b) < b.splash) this.damage(other, b.damage * BALANCE.defense.splashDamage); } b.life = 0; } }
     }

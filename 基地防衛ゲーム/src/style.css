@@ -64,3 +64,4 @@
   .skill-button { width:56px; height:66px; }
   .joystick { left:max(15px,env(safe-area-inset-left)); width:84px; height:84px; }
 }
+.route-map-open{display:block;width:100%;min-height:32px;border:0;border-top:1px solid #ffffff20;background:#263c30;color:#e4e6c6;font:600 10px system-ui;cursor:pointer}.route-map-panel{max-width:440px;margin:auto}.route-map-panel canvas{display:block;width:100%;max-width:360px;height:auto;margin:auto;border:1px solid #91aa7955;border-radius:8px}.route-map-panel p{font-size:12px;line-height:1.7;color:#c2cbb3}.route-map-panel ul{padding-left:18px;font-size:12px;line-height:1.8;color:#dce1cc}.route-map-panel li:nth-child(1) b{color:#edaa91}.route-map-panel li:nth-child(2) b{color:#a8c59c}.route-map-panel li:nth-child(3) b{color:#ddbf7c}.route-map-panel li:nth-child(4) b{color:#c7b9ce}@media(max-width:760px){.expedition-mini{width:106px}.expedition-mini canvas{width:94px;height:94px}.route-map-open{min-height:34px;font-size:10px}}

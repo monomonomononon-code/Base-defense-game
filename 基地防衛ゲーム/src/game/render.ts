@@ -1,6 +1,7 @@
 import { BALANCE, ENEMIES, REGIONS } from './data';
 import { baseMaxHp } from './state';
 import { Game, clamp, distance } from './engine';
+import { drawExpeditionRoads } from './expeditionRender';
 
 export function render(ctx: CanvasRenderingContext2D, game: Game, width: number, height: number) {
   const g = game; const s = Math.max(.62, Math.min(1.12, width / 940));
@@ -12,14 +13,16 @@ export function render(ctx: CanvasRenderingContext2D, game: Game, width: number,
   if (g.shake > 0) ctx.translate(Math.sin(g.clock * 130) * 3, Math.cos(g.clock * 100) * 3);
   const ground = g.mode === 'base' ? '#80956a' : REGIONS[g.region].ground;
   ctx.fillStyle = ground; ctx.fillRect(0, 0, BALANCE.world, BALANCE.world);
+  if(g.expeditionMap){ctx.fillStyle='#20392ca0';ctx.fillRect(0,0,BALANCE.world,BALANCE.world);}
   // A hand-drawn terrain: translucent patches, a winding stream and footpaths.
   for (let i = 0; i < 35; i++) { ctx.fillStyle = i % 2 ? '#c1cc8612' : '#334c2810'; ellipse(ctx, (i * 311 + 80) % 1600, (i * 193 + 240) % 1600, 90 + i % 4 * 28, 35 + i % 3 * 25); }
   ctx.strokeStyle = '#455e5438'; ctx.lineWidth = 100; ctx.beginPath(); ctx.moveTo(100, 0); ctx.bezierCurveTo(270, 350, 5, 500, 175, 720); ctx.bezierCurveTo(340, 1000, 70, 1260, 150, 1600); ctx.stroke();
   ctx.strokeStyle = g.region === 7 && g.mode === 'expedition' ? '#bfd6d3' : '#779c97'; ctx.lineWidth = 73; ctx.stroke();
   ctx.strokeStyle = '#b6d0b338'; ctx.lineWidth = 2; for (let i = 0; i < 30; i++) { const y = i * 57; const x = 155 + Math.sin(y / 180) * 33; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 16, y); ctx.stroke(); }
   ctx.lineCap = 'round'; ctx.strokeStyle = '#c2b78a80'; ctx.lineWidth = 57; ctx.beginPath();
-  if (g.mode === 'base') { ctx.moveTo(800, 1700); ctx.bezierCurveTo(980, 1200, 705, 1150, 800, 840); ctx.moveTo(800, 880); ctx.bezierCurveTo(1110, 880, 1140, 700, 1660, 690); } else { ctx.moveTo(800, 1400); ctx.bezierCurveTo(600, 1080, 1300, 650, 1080, 300); }
+  if (g.mode === 'base') { ctx.moveTo(800, 1700); ctx.bezierCurveTo(980, 1200, 705, 1150, 800, 840); ctx.moveTo(800, 880); ctx.bezierCurveTo(1110, 880, 1140, 700, 1660, 690); }
   ctx.stroke(); ctx.strokeStyle = '#d3c69c25'; ctx.lineWidth = 42; ctx.stroke();
+  if (g.expeditionMap) drawExpeditionRoads(ctx, g.expeditionMap);
   for (const d of g.decor.filter(d => d.type !== 'tree')) {
     if (d.type === 'grass') { ctx.strokeStyle = '#3f613b44'; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(d.x - 4, d.y); ctx.lineTo(d.x - 6, d.y - 6); ctx.moveTo(d.x, d.y); ctx.lineTo(d.x + 1, d.y - 9); ctx.moveTo(d.x + 4, d.y); ctx.lineTo(d.x + 7, d.y - 5); ctx.stroke(); }
     else if (d.type === 'flower') { ctx.fillStyle = d.variant > .5 ? '#e0cf9633' : '#d4e0b755'; for (let i = 0; i < 3; i++) circle(ctx, d.x + i * 5, d.y - (i % 2) * 5, 2); }
@@ -107,8 +110,17 @@ export function drawMinimap(ctx: CanvasRenderingContext2D, g: Game, size = 120) 
   ctx.clearRect(0, 0, size, size); ctx.fillStyle = '#253b30'; ctx.fillRect(0, 0, size, size); const k = size / 1600;
   ctx.strokeStyle = '#bdd7a510'; ctx.lineWidth = 1; for (let i = 1; i < 4; i++) { ctx.beginPath(); ctx.moveTo(i * size / 4, 0); ctx.lineTo(i * size / 4, size); ctx.moveTo(0, i * size / 4); ctx.lineTo(size, i * size / 4); ctx.stroke(); }
   for (const d of g.decor.filter(d => d.type === 'tree')) { ctx.fillStyle = '#69876255'; circle(ctx, d.x * k, d.y * k, 2); }
+  if (g.expeditionMap) {
+    drawExpeditionRoads(ctx, g.expeditionMap, k);
+    const p=g.expeditionMap.nodes.boss; ctx.fillStyle=g.bossDefeated ? '#a8c59c' : '#edaa91';
+    ctx.fillRect(p.x*k-4,p.y*k-4,8,8);
+    if(size>200) { ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillText(g.bossDefeated ? '主 討伐済' : `主 ${Math.min(g.expeditionKills,g.bossTarget)}/${g.bossTarget}`,p.x*k,p.y*k-10); }
+  }
   if (g.mode === 'base') { ctx.fillStyle = '#e4d5a0'; ctx.fillRect(800 * k - 4, 800 * k - 4, 8, 8); }
-  for (const p of g.points.filter(p => !p.done)) { ctx.fillStyle = p.type === 'camp' ? '#d2a089' : p.type === 'portal' ? '#a7d6bd' : '#e8d396'; circle(ctx, p.x * k, p.y * k, 2.5); }
+  for (const p of g.points.filter(p => !p.done)) {
+    ctx.fillStyle = p.type === 'camp' ? '#d2a089' : p.type === 'portal' ? '#a7d6bd' : p.type === 'resource' ? '#a8c59c' : '#e8d396'; circle(ctx, p.x * k, p.y * k, size>200 ? 5 : 2.5);
+    if(size>200) { ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillText(({portal:'帰還',resource:'資源',chest:'宝箱',event:'発見',camp:'前哨地'})[p.type],p.x*k,p.y*k+17); }
+  }
   for (const e of g.enemies) { ctx.fillStyle = e.kind === 'boss' ? '#ff846a' : '#d89583'; circle(ctx, e.x * k, e.y * k, e.kind === 'boss' ? 3.5 : 1.8); }
   ctx.fillStyle = '#d4f79f'; circle(ctx, g.hero.x * k, g.hero.y * k, 3.5); ctx.strokeStyle = '#d4f79f44'; ctx.lineWidth = 1; circleStroke(ctx, g.hero.x * k, g.hero.y * k, 7);
 }

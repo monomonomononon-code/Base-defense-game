@@ -3,36 +3,36 @@
   "results": [
     {
       "mode": "defense",
-      "minutes": 7.79,
+      "minutes": 7.82,
       "deaths": 0,
       "bestWave": 10,
       "bestDanger": 0,
       "mastery": 9,
-      "shards": 41,
+      "shards": 37,
       "rewards": {
-        "gold": 87056,
-        "wood": 3354,
+        "gold": 87101,
+        "wood": 3240,
         "iron": 350,
-        "crystal": 259,
-        "shards": 235,
-        "rareDrops": 4
+        "crystal": 258,
+        "shards": 231,
+        "rareDrops": 3
       }
     },
     {
       "mode": "expedition",
-      "minutes": 4.37,
+      "minutes": 3.97,
       "deaths": 0,
       "bestWave": 0,
       "bestDanger": 5,
       "mastery": 12,
-      "shards": 165,
+      "shards": 154,
       "rewards": {
-        "gold": 142635,
-        "wood": 0,
-        "iron": 3153,
-        "crystal": 953,
-        "shards": 447,
-        "rareDrops": 12
+        "gold": 107328,
+        "wood": 4759,
+        "iron": 0,
+        "crystal": 431,
+        "shards": 436,
+        "rareDrops": 11
       }
     }
   ]
